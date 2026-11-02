@@ -50,3 +50,48 @@ body {
   background: var(--fundo);
   color: var(--azul-obra);
 }
+
+/* "Raio de busca" slider (screen 01): beige track, yellow fill up to the value, outlined thumb. */
+.radius-range {
+  appearance: none;
+  background: transparent;
+}
+.radius-range::-webkit-slider-runnable-track {
+  height: 8px;
+  border-radius: 9999px;
+  background: linear-gradient(
+    to right,
+    var(--amarelo-capacete) var(--fill),
+    var(--borda) var(--fill)
+  );
+}
+.radius-range::-moz-range-track {
+  height: 8px;
+  border-radius: 9999px;
+  background: var(--borda);
+}
+.radius-range::-moz-range-progress {
+  height: 8px;
+  border-radius: 9999px;
+  background: var(--amarelo-capacete);
+}
+.radius-range::-webkit-slider-thumb {
+  appearance: none;
+  margin-top: -9px;
+  width: 26px;
+  height: 26px;
+  border-radius: 9999px;
+  background: var(--superficie);
+  border: 3px solid var(--azul-obra);
+}
+.radius-range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 9999px;
+  background: var(--superficie);
+  border: 3px solid var(--azul-obra);
+}
+.radius-range:focus-visible {
+  outline: 2px solid var(--azul-obra);
+  outline-offset: 4px;
+}

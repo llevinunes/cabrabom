@@ -50,6 +50,8 @@ cp .env.example .env.local
 npx supabase status -o env
 # copie API_URL para SUPABASE_URL, SERVICE_ROLE_KEY para SUPABASE_SERVICE_ROLE_KEY
 # e ANON_KEY para SUPABASE_ANON_KEY (esta só é usada pelos testes)
+node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))"
+# cole o resultado em COOKIE_SECRET
 
 # 4. App
 npm run dev
@@ -62,6 +64,8 @@ No Docker Desktop, os containers do banco aparecem agrupados como **cabrabom**. 
 ### Login sem o número oficial do WhatsApp
 
 Em desenvolvimento, o login funciona sem a API da Meta. Em `/entrar`, toque em "Entrar com WhatsApp" e depois em "Simular mensagem": a página `/dev/whatsapp` faz o papel do webhook. Essa página não existe em produção.
+
+Para testar o cadastro de prestador, abra <http://localhost:3000/prestador>, preencha o formulário e conclua o login pelo simulador com qualquer celular brasileiro (ex.: `83 98888-7777`).
 
 ### Testes
 

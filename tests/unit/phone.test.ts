@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { normalizePhone } from "@/lib/phone";
+import { formatPhone, normalizePhone } from "@/lib/phone";
 
 describe("normalizePhone", () => {
   test("keeps only digits", () => {
@@ -26,4 +26,9 @@ describe("normalizePhone", () => {
     expect(normalizePhone("14155552671")).toBeNull(); // US number
     expect(normalizePhone("5583999991234567")).toBeNull();
   });
+});
+
+test("formatPhone shows a normalized number the Brazilian way", () => {
+  expect(formatPhone("5583999991234")).toBe("(83) 99999-1234");
+  expect(formatPhone("558333221234")).toBe("(83) 3322-1234");
 });

@@ -5,6 +5,7 @@ const valid = {
   SUPABASE_URL: "http://127.0.0.1:54321",
   SUPABASE_SERVICE_ROLE_KEY: "secret",
   WHATSAPP_CABRABOM_NUMBER: "5583900000000",
+  COOKIE_SECRET: "x".repeat(32),
 };
 
 describe("parseEnv", () => {
@@ -31,4 +32,8 @@ describe("parseEnv", () => {
       /WHATSAPP_CABRABOM_NUMBER/,
     );
   });
+});
+
+test("requires a cookie secret of at least 32 characters", () => {
+  expect(() => parseEnv({ ...valid, COOKIE_SECRET: "short" })).toThrow(/COOKIE_SECRET/);
 });

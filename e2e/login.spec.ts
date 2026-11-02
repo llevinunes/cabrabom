@@ -17,7 +17,7 @@ async function simulate(context: BrowserContext, text: string) {
   return simulator;
 }
 
-test("logs in with the WhatsApp simulator and returns to the protected page", async ({ page, context }) => {
+test("logs in with the WhatsApp simulator and returns to the page that asked for it", async ({ page, context }) => {
   await page.goto("/painel");
   await expect(page).toHaveURL(/\/entrar\?voltar=%2Fpainel$/);
 
@@ -28,7 +28,8 @@ test("logs in with the WhatsApp simulator and returns to the protected page", as
   const simulator = await simulate(context, `ENTRAR ${code}`);
   await expect(simulator.getByRole("status")).toHaveText("Código confirmado.");
 
-  await expect(page).toHaveURL(/\/painel$/, { timeout: 10_000 });
+  // Back on /painel, which sends a phone that is not a provider yet to the signup page.
+  await expect(page).toHaveURL(/\/prestador$/, { timeout: 10_000 });
   const cookies = await context.cookies();
   expect(cookies.find((c) => c.name === "session")?.httpOnly).toBe(true);
 });

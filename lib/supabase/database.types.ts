@@ -180,8 +180,11 @@ isOneToOne: false
             "assert_valid_coordinates":
 { Args: { "p_lat": number,"p_lng": number }; Returns: undefined
                            },
+"coarse_point":
+{ Args: { "p_lat": number,"p_lng": number }; Returns: unknown
+                           },
 "create_provider":
-{ Args: { "p_category_ids": (number)[],"p_city": string,"p_lat": number,"p_lng": number,"p_name": string,"p_neighborhood": string,"p_whatsapp": string }; Returns: string
+{ Args: { "p_category_ids"?: (number)[],"p_city"?: string,"p_lat": number,"p_lng": number,"p_name": string,"p_neighborhood"?: string,"p_whatsapp": string }; Returns: string
                            },
 "distance_to_provider":
 { Args: { "p_lat": number,"p_lng": number,"p_provider_id": string }; Returns: number
@@ -192,7 +195,7 @@ isOneToOne: false
             }[]
                            },
 "set_provider_location":
-{ Args: { "p_city": string,"p_lat": number,"p_lng": number,"p_neighborhood": string,"p_provider_id": string }; Returns: undefined
+{ Args: { "p_city"?: string,"p_lat": number,"p_lng": number,"p_neighborhood"?: string,"p_provider_id": string }; Returns: undefined
                            }
           }
           Enums: {

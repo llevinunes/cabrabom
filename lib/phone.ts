@@ -17,3 +17,11 @@ export function normalizePhone(input: string): string | null {
   }
   return digits.length === 13 && digits[4] === "9" ? digits : null;
 }
+
+/** "(83) 99999-1234" for a normalized number. */
+export function formatPhone(normalized: string): string {
+  const area = normalized.slice(2, 4);
+  const number = normalized.slice(4);
+  const split = number.length - 4;
+  return `(${area}) ${number.slice(0, split)}-${number.slice(split)}`;
+}

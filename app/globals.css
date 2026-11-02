@@ -1,26 +1,52 @@
 @import "tailwindcss";
 
+/* Tokens do guia de design (seção 9) */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --azul-obra: #14233c;
+  --amarelo-capacete: #ffc20e;
+  --laranja-colete: #ff6a13;
+  --laranja-texto: #c2410c;
+  --branco-cabra: #f4f1ea;
+  --fundo: #f6f3ec;
+  --superficie: #ffffff;
+  --texto-secundario: #5a6678;
+  --borda: #ddd6c8;
+  --whatsapp: #147a40;
+  --livre-fundo: #ddf3e4;
+  --livre-texto: #146c3a;
+  --ocupado-fundo: #fde7d6;
+  --ocupado-texto: #9a3412;
+
+  --raio-botao: 14px;
+  --raio-campo: 12px;
+  --raio-card: 18px;
+  --margem-tela: 24px;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-obra: var(--azul-obra);
+  --color-capacete: var(--amarelo-capacete);
+  --color-colete: var(--laranja-colete);
+  --color-laranja-texto: var(--laranja-texto);
+  --color-cabra: var(--branco-cabra);
+  --color-fundo: var(--fundo);
+  --color-superficie: var(--superficie);
+  --color-secundario: var(--texto-secundario);
+  --color-borda: var(--borda);
+  --color-whatsapp: var(--whatsapp);
+  --color-livre-fundo: var(--livre-fundo);
+  --color-livre-texto: var(--livre-texto);
+  --color-ocupado-fundo: var(--ocupado-fundo);
+  --color-ocupado-texto: var(--ocupado-texto);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --radius-botao: var(--raio-botao);
+  --radius-campo: var(--raio-campo);
+  --radius-card: var(--raio-card);
+
+  --font-sans: var(--font-archivo), "Helvetica Neue", Arial, sans-serif;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--fundo);
+  color: var(--azul-obra);
 }

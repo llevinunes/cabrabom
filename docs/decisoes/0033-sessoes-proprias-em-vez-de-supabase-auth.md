@@ -25,3 +25,4 @@ A identidade no CabraBom é o número de WhatsApp, verificado pelo OTP reverso (
 
 - Positivas: login gratuito e sem senha; sessões revogáveis.
 - Negativas: o código de sessão é nosso, então segurança e testes também; cada requisição autenticada faz uma consulta na tabela `sessions`.
+- Risco aceito (phishing do OTP reverso): alguém pode iniciar um login no próprio navegador e convencer a vítima a enviar a mensagem `ENTRAR XXXXX`, entrando como ela. Sem responder mensagens (ADR 0010), não há como confirmar a origem. A tela avisa "Só envie a mensagem se foi você que pediu para entrar no CabraBom".

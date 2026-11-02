@@ -79,6 +79,10 @@ Em desenvolvimento, o login funciona sem a API da Meta. Em `/entrar`, toque em "
 
 Para testar o cadastro de prestador, abra <http://localhost:3000/prestador>, preencha o formulário e conclua o login pelo simulador com qualquer celular brasileiro (ex.: `83 98888-7777`).
 
+### Testar no celular
+
+Com o celular na mesma rede Wi-Fi, use `npm run dev:https` e abra `https://<IP-do-computador>:3000` (o IP aparece no terminal, em "Network"). O navegador vai avisar que o certificado não é confiável: aceite para continuar. Sem HTTPS, o celular não libera a localização ("Usar minha localização"); só o `localhost` dispensa isso.
+
 ### Testes
 
 ```bash

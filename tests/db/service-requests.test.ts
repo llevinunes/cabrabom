@@ -1,5 +1,5 @@
 import { afterEach, beforeAll, describe, expect, test } from "vitest";
-import { openServiceRequest } from "@/lib/service-requests/open";
+import { findOpenRequest, openServiceRequest, recentRequestCount } from "@/lib/service-requests/open";
 import { CITY_CENTRE, JOAO_ID, categoryId, cleanTestData, testClient } from "./helpers";
 
 const db = testClient();
@@ -67,4 +67,25 @@ describe("openServiceRequest", () => {
     await db.from("providers").update({ hidden: true }).eq("id", JOAO_ID);
     await expect(openServiceRequest(db, request())).rejects.toThrow(/provider/);
   });
+});
+
+describe("abuse protection helpers", () => {
+  test("findOpenRequest returns this browser's open request, if any", async () => {
+    expect(await findOpenRequest(db, JOAO_ID, "browser-1")).toBeNull();
+    const { token } = await openServiceRequest(db, request());
+    expect(await findOpenRequest(db, JOAO_ID, "browser-1")).toBe(token);
+    expect(await findOpenRequest(db, JOAO_ID, "browser-2")).toBeNull();
+  });
+
+  test("recentRequestCount counts a provider's requests in the last hour", async () => {
+    await openServiceRequest(db, request());
+    await openServiceRequest(db, request({ anonymousClient: "browser-2" }));
+    expect(await recentRequestCount(db, JOAO_ID, 60)).toBe(2);
+  });
+});
+
+test("a position far outside the service area does not break the request", async () => {
+  const { token } = await openServiceRequest(db, request({ lat: 35, lng: 139 }));
+  const { data } = await db.from("service_requests").select("distance_km").eq("provider_token", token).single();
+  expect(data!.distance_km).toBeNull();
 });

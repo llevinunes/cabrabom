@@ -1,8 +1,6 @@
 import "server-only";
 import { cookies } from "next/headers";
 
-export { SESSION_COOKIE, VERIFICATION_COOKIE } from "./cookie-names";
-
 export async function setPrivateCookie(name: string, value: string, expires: Date) {
   (await cookies()).set(name, value, {
     httpOnly: true,

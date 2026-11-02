@@ -1,7 +1,8 @@
 import { createSession } from "@/lib/auth/session";
 import { consumeVerification, findPendingVerification } from "@/lib/auth/verification";
 import { createServerClient } from "@/lib/supabase/server";
-import { VERIFICATION_COOKIE, deleteCookie, readCookie } from "@/server/cookies";
+import { VERIFICATION_COOKIE } from "@/server/cookie-names";
+import { deleteCookie, readCookie } from "@/server/cookies";
 import { setSessionCookie } from "@/server/session";
 
 export type LoginStatus = { ready: boolean; expired?: boolean };

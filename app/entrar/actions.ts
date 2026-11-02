@@ -5,7 +5,8 @@ import { findPendingVerification, startVerification, type Verification } from "@
 import { env } from "@/lib/env";
 import { withinLimit } from "@/lib/rate-limit";
 import { createServerClient } from "@/lib/supabase/server";
-import { VERIFICATION_COOKIE, readCookie, setPrivateCookie } from "@/server/cookies";
+import { VERIFICATION_COOKIE } from "@/server/cookie-names";
+import { readCookie, setPrivateCookie } from "@/server/cookies";
 import { getClientIp } from "@/server/request-ip";
 
 export type StartLoginResult =

@@ -37,3 +37,19 @@ test("the database rejects phones outside the 55 + DDD + number format", async (
     .insert({ phone: "+55 83 99999-1234", expires_at: new Date(Date.now() + 60_000).toISOString() });
   expect(error?.code).toBe("23514");
 });
+
+test("the database rejects a 12-digit mobile missing the 9", async () => {
+  const { error } = await db
+    .from("sessions")
+    .insert({ phone: "558399991234", expires_at: new Date(Date.now() + 60_000).toISOString() });
+  expect(error?.code).toBe("23514");
+});
+
+test("the database accepts mobiles and 8-digit landlines", async () => {
+  const expires_at = new Date(Date.now() + 60_000).toISOString();
+  const { error } = await db.from("sessions").insert([
+    { phone: "5583999991234", expires_at },
+    { phone: "558333221234", expires_at },
+  ]);
+  expect(error).toBeNull();
+});

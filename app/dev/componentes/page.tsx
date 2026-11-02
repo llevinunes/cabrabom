@@ -23,10 +23,10 @@ export default function ComponentsShowcase() {
         <Icon name="profile" />
       </div>
       <div className="flex flex-col gap-3">
-        <Button variant="primary">Botão</Button>
-        <Button variant="secondary">Botão</Button>
-        <Button variant="whatsapp">Botão</Button>
-        <Button variant="outline">Botão</Button>
+        <Button type="button" variant="primary">Botão</Button>
+        <Button type="button" variant="secondary">Botão</Button>
+        <Button type="button" variant="whatsapp">Botão</Button>
+        <Button type="button" variant="outline">Botão</Button>
       </div>
       <div className="flex flex-wrap gap-2">
         <Chip>Chip</Chip>
@@ -45,7 +45,7 @@ export default function ComponentsShowcase() {
           categories: ["Categoria 1", "Categoria 2"],
           recommendationCount: 3,
         }}
-        chatAction={<Button variant="whatsapp">Conversar no WhatsApp</Button>}
+        chatAction={<Button type="button" variant="whatsapp">Conversar no WhatsApp</Button>}
       />
     </main>
   );

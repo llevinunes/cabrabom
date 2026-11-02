@@ -10,7 +10,8 @@
     "test": "vitest run --project unit --project dom",
     "test:db": "vitest run --project db",
     "test:e2e": "playwright test",
-    "icons": "node scripts/generate-icons.mjs"
+    "icons": "node scripts/generate-icons.mjs",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "next": "16.4.3",

@@ -18,7 +18,12 @@ type CommonProps = {
   children: React.ReactNode;
 };
 
-type AsButton = CommonProps & React.ButtonHTMLAttributes<HTMLButtonElement> & { href?: undefined };
+/** `type` is required so a button inside a form never submits (or fails to submit) by accident. */
+type AsButton = CommonProps &
+  Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type"> & {
+    type: "button" | "submit" | "reset";
+    href?: undefined;
+  };
 type AsLink = CommonProps & { href: string; external?: boolean };
 
 export function buttonClasses(variant: ButtonVariant = "primary", width: ButtonWidth = "full") {
@@ -61,7 +66,7 @@ export function Button(props: AsButton | AsLink) {
     ...buttonProps
   } = props as AsButton;
   return (
-    <button type="button" {...buttonProps} className={classes}>
+    <button {...buttonProps} className={classes}>
       {content}
     </button>
   );

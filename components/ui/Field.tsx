@@ -14,6 +14,9 @@ type FieldProps = {
 export function Field(props: FieldProps) {
   const { label, id, error } = props;
   const errorId = error ? `${id}-error` : undefined;
+  const describedBy = [props["aria-describedby"], errorId].filter(Boolean).join(" ") || undefined;
+  const invalid = error ? true : props["aria-invalid"];
+  const classes = [boxClasses, props.className].filter(Boolean).join(" ");
   return (
     <div className="flex flex-col gap-2">
       <label htmlFor={id} className="text-sm font-semibold">
@@ -24,17 +27,17 @@ export function Field(props: FieldProps) {
           {...withoutFieldProps(props)}
           id={id}
           rows={props.rows ?? 2}
-          aria-invalid={error ? true : undefined}
-          aria-describedby={errorId}
-          className={`${boxClasses} resize-none`}
+          aria-invalid={invalid}
+          aria-describedby={describedBy}
+          className={`${classes} resize-none`}
         />
       ) : (
         <input
           {...withoutFieldProps(props)}
           id={id}
-          aria-invalid={error ? true : undefined}
-          aria-describedby={errorId}
-          className={boxClasses}
+          aria-invalid={invalid}
+          aria-describedby={describedBy}
+          className={classes}
         />
       )}
       {error && <FieldError id={errorId!}>{error}</FieldError>}

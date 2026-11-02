@@ -47,13 +47,17 @@ npm run db:reset
 
 # 3. Variáveis de ambiente
 cp .env.example .env.local
-npx supabase status -o env   # copie SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY para o .env.local
+npx supabase status -o env
+# copie API_URL para SUPABASE_URL, SERVICE_ROLE_KEY para SUPABASE_SERVICE_ROLE_KEY
+# e ANON_KEY para SUPABASE_ANON_KEY (esta só é usada pelos testes)
 
 # 4. App
 npm run dev
 ```
 
 Abra <http://localhost:3000>. Os dados de exemplo trazem prestadores em Campina Grande (PB).
+
+No Docker Desktop, os containers do banco aparecem agrupados como **cabrabom**. O painel do banco (Supabase Studio) fica em <http://127.0.0.1:54323>. Para desligar tudo: `npm run db:stop`.
 
 ### Login sem o número oficial do WhatsApp
 
@@ -62,7 +66,8 @@ Em desenvolvimento, o login funciona sem a API da Meta. Em `/entrar`, toque em "
 ### Testes
 
 ```bash
-npm test           # regras de negócio (sem banco)
+npm test           # regras de negócio e componentes (sem banco)
+npm run typecheck  # checagem de tipos
 npm run test:db    # testes contra o Supabase local (rode npm run db:reset antes)
 npm run test:e2e   # fluxo completo no navegador (Playwright)
 ```

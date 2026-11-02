@@ -39,3 +39,4 @@ Para registrar uma decisão nova, copie `0000-modelo.md`, use o próximo número
 | [0031](0031-migracoes-numeradas-em-sequencia.md) | Migrações numeradas em sequência | Aceita | Usuário |
 | [0032](0032-simulador-do-webhook-do-whatsapp-em-desenvolvimento.md) | Simulador do webhook do WhatsApp em desenvolvimento | Aceita | Usuário e IA |
 | [0033](0033-sessoes-proprias-em-vez-de-supabase-auth.md) | Sessões próprias em vez do Supabase Auth | Aceita | IA |
+| [0034](0034-localizacao-do-prestador-arredondada.md) | Localização do prestador arredondada | Aceita | IA e usuário |

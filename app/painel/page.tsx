@@ -57,8 +57,9 @@ export default async function ProviderPanel() {
             {pending.map((request) => (
               <li key={request.token} className="flex flex-col gap-3 rounded-card border border-borda bg-superficie p-4">
                 <div className="flex items-baseline justify-between gap-3">
-                  <span className="font-bold">
-                    {request.clientName} · {request.category}
+                  {/* Client text is untrusted: isolate its direction and let it wrap. */}
+                  <span className="min-w-0 font-bold [overflow-wrap:anywhere]">
+                    <bdi>{request.clientName}</bdi> · {request.category}
                   </span>
                   <span className="shrink-0 text-[13px] font-semibold text-laranja-texto">
                     {deadlineText(request.createdAt)}

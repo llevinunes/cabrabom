@@ -55,10 +55,15 @@ export default async function ServiceRequestForProvider({ params }: PageProps<"/
 
       <article className="flex flex-col gap-3 rounded-card border border-borda bg-superficie p-4">
         <div className="flex items-start justify-between gap-3">
-          <h2 className="text-lg font-extrabold">{request.clientName}</h2>
+          {/* Client text is untrusted: isolate its direction and let it wrap. */}
+          <h2 className="min-w-0 text-lg font-extrabold [overflow-wrap:anywhere]">
+            <bdi>{request.clientName}</bdi>
+          </h2>
           <Chip>{request.category}</Chip>
         </div>
-        <p className="whitespace-pre-line text-[15px]">{request.details}</p>
+        <p className="whitespace-pre-line text-[15px] [overflow-wrap:anywhere]">
+          <bdi>{request.details}</bdi>
+        </p>
         {request.distanceKm !== null && (
           <p className="flex items-center gap-2 text-sm text-secundario">
             <Icon name="location" className="size-5 text-obra" />A cerca de {formatKm(request.distanceKm)} de você

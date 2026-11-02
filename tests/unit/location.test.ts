@@ -25,6 +25,7 @@ const NOMINATIM_REVERSE = "https://nominatim.openstreetmap.org/reverse";
 
 const brasilApiBody = (coordinates: object) => ({
   cep: "58400000",
+  state: "PB",
   city: "Campina Grande",
   neighborhood: "Centro",
   location: { type: "Point", coordinates },
@@ -40,6 +41,7 @@ describe("lookupCep", () => {
       lng: -35.88,
       neighborhood: "Centro",
       city: "Campina Grande",
+      state: "PB",
     });
   });
 
@@ -53,6 +55,7 @@ describe("lookupCep", () => {
       lng: -35.9,
       neighborhood: "Centro",
       city: "Campina Grande",
+      state: "PB",
     });
     expect(calls[1]).toContain("postalcode=58400-000");
   });
@@ -98,13 +101,16 @@ describe("lookupCep limits", () => {
 describe("placeFromCoordinates", () => {
   test("reads neighborhood and city from Nominatim", async () => {
     const { fetcher } = fakeFetch({
-      [NOMINATIM_REVERSE]: { body: { address: { suburb: "Catolé", city: "Campina Grande" } } },
+      [NOMINATIM_REVERSE]: {
+        body: { address: { suburb: "Catolé", city: "Campina Grande", "ISO3166-2-lvl4": "BR-PB" } },
+      },
     });
     expect(await placeFromCoordinates(-7.24, -35.89, fetcher)).toEqual({
       lat: -7.24,
       lng: -35.89,
       neighborhood: "Catolé",
       city: "Campina Grande",
+      state: "PB",
     });
   });
 
@@ -115,6 +121,20 @@ describe("placeFromCoordinates", () => {
       lng: -35.89,
       neighborhood: null,
       city: null,
+      state: null,
+    });
+  });
+
+  test("keeps city and state when there is no neighborhood", async () => {
+    const { fetcher } = fakeFetch({
+      [NOMINATIM_REVERSE]: { body: { address: { town: "Mulungu", "ISO3166-2-lvl4": "BR-CE" } } },
+    });
+    expect(await placeFromCoordinates(-4.3, -38.99, fetcher)).toEqual({
+      lat: -4.3,
+      lng: -38.99,
+      neighborhood: null,
+      city: "Mulungu",
+      state: "CE",
     });
   });
 });
@@ -138,6 +158,7 @@ describe("resolveLocation", () => {
       lng: -35.9,
       neighborhood: "Prata",
       city: "Campina Grande",
+      state: null,
     });
   });
 });

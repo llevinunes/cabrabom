@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Button } from "@/components/ui/Button";
+import { ChatButton } from "@/components/ChatButton";
 import { chipClasses } from "@/components/ui/Chip";
 import { ProviderCard } from "@/components/ui/ProviderCard";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
@@ -83,11 +83,7 @@ export default async function Results({ searchParams }: PageProps<"/resultados">
               <ProviderCard
                 provider={provider}
                 title={<Link href={`/p/${provider.id}?${profileQuery}`}>{provider.name}</Link>}
-                chatAction={
-                  <Button variant="whatsapp" href={`/p/${provider.id}?${profileQuery}`}>
-                    Conversar no WhatsApp
-                  </Button>
-                }
+                chatAction={<ChatButton providerId={provider.id} search={search} offersCategory />}
               />
             </li>
           ))}

@@ -51,14 +51,14 @@ export default async function Results({ searchParams }: PageProps<"/resultados">
         <Link
           href={resultsHref(search, { ...filters, onlyFree: !filters.onlyFree })}
           className={chipClasses(filters.onlyFree ? "selected" : "neutral")}
-          aria-pressed={filters.onlyFree}
+          aria-label={filters.onlyFree ? "Só livres, ativado" : "Só livres"}
         >
           Só livres
         </Link>
         <Link
           href={resultsHref(search, { ...filters, mostRecommended: !filters.mostRecommended })}
           className={chipClasses(filters.mostRecommended ? "selected" : "neutral")}
-          aria-pressed={filters.mostRecommended}
+          aria-label={filters.mostRecommended ? "Mais recomendados, ativado" : "Mais recomendados"}
         >
           Mais recomendados
         </Link>

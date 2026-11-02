@@ -1,3 +1,4 @@
+-- 0002 · v0.2.0 · PR #3
 -- Functions called through RPC by the server (service_role only, ADR 0030).
 
 create function public.assert_valid_coordinates(p_lat double precision, p_lng double precision)

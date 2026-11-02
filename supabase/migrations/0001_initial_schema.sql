@@ -1,3 +1,4 @@
+-- 0001 · v0.2.0 · PR #3
 -- Initial schema (spec section 8, names in English per ADR 0028).
 -- Phase 1 tables only: media, push subscriptions and reports come in later phases.
 

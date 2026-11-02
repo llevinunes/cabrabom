@@ -50,12 +50,15 @@ test("a shared profile link asks for the missing details first", async ({ page, 
   await expect(page.getByRole("radio", { name: "Eletricista" })).toBeVisible();
   await expect(page.getByRole("radio", { name: "Encanador" })).toBeVisible();
 
-  await page.getByRole("button", { name: "Conversar no WhatsApp" }).click();
-  await expect(page.getByText("Informe seu nome")).toBeVisible();
-
-  await page.getByLabel("Seu nome").fill("Ana");
   await page.getByText("Encanador").click();
   await page.getByLabel("Detalhes do serviço").fill("Pia entupida");
+  await page.getByRole("button", { name: "Conversar no WhatsApp" }).click();
+  await expect(page.getByText("Informe seu nome")).toBeVisible();
+  // what was typed survives the error
+  await expect(page.getByLabel("Detalhes do serviço")).toHaveValue("Pia entupida");
+  await expect(page.getByRole("radio", { name: "Encanador" })).toBeChecked();
+
+  await page.getByLabel("Seu nome").fill("Ana");
   await page.getByRole("button", { name: "Conversar no WhatsApp" }).click();
   await expect.poll(whatsapp).toContain("Meu%20nome%20%C3%A9%20Ana");
 });

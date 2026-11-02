@@ -1,62 +1,127 @@
 import { afterEach, beforeAll, describe, expect, test } from "vitest";
-import { CITY_CENTRE, JOAO_ID, JOAO_WHATSAPP, categoryId, cleanTestData, testClient } from "./helpers";
+import {
+  CITY_CENTRE,
+  JOAO_ID,
+  JOAO_WHATSAPP,
+  categoryId,
+  cleanTestData,
+  createProviderNorth,
+  testClient,
+} from "./helpers";
 
 const db = testClient();
 let electrician: number;
+let plumber: number;
 let painter: number;
 
 beforeAll(async () => {
   electrician = await categoryId(db, "eletricista");
+  plumber = await categoryId(db, "encanador");
   painter = await categoryId(db, "pintor");
+  await cleanTestData(db);
 });
 
 afterEach(() => cleanTestData(db));
 
-function search(radiusKm: number, categoryIdValue = electrician) {
-  return db.rpc("search_providers", {
+async function search(radiusKm: number, categoryIdValue = electrician) {
+  const { data, error } = await db.rpc("search_providers", {
     p_lat: CITY_CENTRE.lat,
     p_lng: CITY_CENTRE.lng,
     p_radius_km: radiusKm,
     p_category_id: categoryIdValue,
   });
+  if (error) throw error;
+  return data;
 }
 
+const names = (rows: { name: string }[]) => rows.map((r) => r.name);
+
 describe("search_providers", () => {
-  test("lists free providers first, then by distance", async () => {
-    const { data, error } = await search(10);
-    expect(error).toBeNull();
-    expect(data!.map((p) => p.name)).toEqual(["João Silva", "Antônio Ferreira", "Raimundo Costa"]);
+  test("lists free providers first, even when a busy one is closer", async () => {
+    await createProviderNorth(db, {
+      name: "Ocupado Perto",
+      whatsapp: "5583911110001",
+      km: 0.5,
+      categoryIds: [electrician],
+      busy: true,
+    });
+    expect(names(await search(10))).toEqual(["João Silva", "Antônio Ferreira", "Ocupado Perto", "Raimundo Costa"]);
+  });
+
+  test("breaks distance ties by recommendation count", async () => {
+    const plain = await createProviderNorth(db, {
+      name: "Sem Recomendação",
+      whatsapp: "5583911110002",
+      km: 5,
+      categoryIds: [electrician],
+    });
+    const recommended = await createProviderNorth(db, {
+      name: "Recomendado",
+      whatsapp: "5583911110003",
+      km: 5,
+      categoryIds: [electrician],
+    });
+    const { data: request, error } = await db
+      .from("service_requests")
+      .insert({
+        provider_id: recommended,
+        category_id: electrician,
+        client_name: "Maria",
+        details: "teste",
+        provider_token: "token-desempate-000000",
+        status: "recommended",
+      })
+      .select("id")
+      .single();
+    if (error) throw error;
+    const rec = await db.from("recommendations").insert({
+      provider_id: recommended,
+      service_request_id: request.id,
+      client_name: "Maria",
+      client_phone: "5583922220000",
+    });
+    if (rec.error) throw rec.error;
+
+    const order = names(await search(10));
+    expect(order.indexOf("Recomendado")).toBeLessThan(order.indexOf("Sem Recomendação"));
+    expect(plain).toBeDefined();
   });
 
   test("returns neighborhood, rounded distance, all categories and recommendation count", async () => {
-    const { data } = await search(10);
-    const joao = data!.find((p) => p.id === JOAO_ID)!;
+    const joao = (await search(10)).find((p) => p.id === JOAO_ID)!;
     expect(joao.neighborhood).toBe("Centro");
-    expect(Number(joao.distance_km)).toBeCloseTo(1.2, 0);
-    expect(joao.categories.sort()).toEqual(["Eletricista", "Encanador"]);
+    expect(Number(joao.distance_km)).toBe(1.2);
+    expect(joao.categories).toEqual(["Eletricista", "Encanador"]);
     expect(Number(joao.recommendation_count)).toBe(0);
     expect(joao.busy).toBe(false);
   });
 
   test("respects the radius", async () => {
-    const { data } = await search(2);
-    expect(data!.map((p) => p.name)).toEqual(["João Silva"]);
+    expect(names(await search(2))).toEqual(["João Silva"]);
   });
 
   test("caps the radius at 100 km", async () => {
-    const { data } = await search(500);
-    expect(data).toHaveLength(3);
+    await createProviderNorth(db, { name: "Longe", whatsapp: "5583911110004", km: 150, categoryIds: [electrician] });
+    expect(names(await search(500))).not.toContain("Longe");
+  });
+
+  test("raises a radius below 1 km to 1 km", async () => {
+    await createProviderNorth(db, { name: "Vizinho", whatsapp: "5583911110005", km: 0.5, categoryIds: [electrician] });
+    expect(names(await search(0))).toEqual(["Vizinho"]);
   });
 
   test("returns nothing for a category nobody offers", async () => {
-    const { data } = await search(10, painter);
-    expect(data).toEqual([]);
+    expect(await search(10, painter)).toEqual([]);
+  });
+
+  test("returns nothing for a deactivated category", async () => {
+    await db.from("categories").update({ active: false }).eq("id", electrician);
+    expect(await search(10)).toEqual([]);
   });
 
   test("hides providers flagged as hidden", async () => {
     await db.from("providers").update({ hidden: true }).eq("id", JOAO_ID);
-    const { data } = await search(10);
-    expect(data!.map((p) => p.name)).not.toContain("João Silva");
+    expect(names(await search(10))).not.toContain("João Silva");
   });
 });
 
@@ -68,7 +133,7 @@ describe("distance_to_provider", () => {
       p_lng: CITY_CENTRE.lng,
     });
     expect(error).toBeNull();
-    expect(Number(data)).toBeCloseTo(1.2, 0);
+    expect(Number(data)).toBe(1.2);
   });
 });
 
@@ -83,7 +148,6 @@ describe("create_provider", () => {
   };
 
   test("creates the provider with categories and consent timestamp", async () => {
-    const plumber = await categoryId(db, "encanador");
     const { data: id, error } = await db.rpc("create_provider", { ...input, p_category_ids: [plumber] });
     expect(error).toBeNull();
     const { data: provider } = await db
@@ -95,6 +159,23 @@ describe("create_provider", () => {
     expect(provider!.neighborhood).toBe("Catolé");
     expect(provider!.whatsapp_consent_at).not.toBeNull();
     expect(provider!.provider_categories).toEqual([{ category_id: plumber }]);
+  });
+
+  test("ignores repeated category ids", async () => {
+    const { data: id, error } = await db.rpc("create_provider", { ...input, p_category_ids: [plumber, plumber] });
+    expect(error).toBeNull();
+    const { data } = await db.from("provider_categories").select("category_id").eq("provider_id", id!);
+    expect(data).toEqual([{ category_id: plumber }]);
+  });
+
+  test("rejects an empty category list", async () => {
+    const { error } = await db.rpc("create_provider", { ...input, p_category_ids: [] });
+    expect(error?.message).toMatch(/categor/i);
+  });
+
+  test("rejects coordinates out of range", async () => {
+    const { error } = await db.rpc("create_provider", { ...input, p_lat: -95, p_category_ids: [plumber] });
+    expect(error?.message).toMatch(/coordinates/i);
   });
 
   test("returns the existing id when the WhatsApp number is already registered", async () => {
@@ -126,13 +207,16 @@ describe("set_provider_location", () => {
       p_lng: CITY_CENTRE.lng,
     });
     expect(Number(distance)).toBe(0);
-    // restore the seed location
-    await db.rpc("set_provider_location", {
+  });
+
+  test("rejects coordinates out of range", async () => {
+    const { error } = await db.rpc("set_provider_location", {
       p_provider_id: JOAO_ID,
-      p_lat: -7.2199,
-      p_lng: -35.8811,
+      p_lat: 10,
+      p_lng: 200,
       p_neighborhood: "Centro",
       p_city: "Campina Grande",
     });
+    expect(error?.message).toMatch(/coordinates/i);
   });
 });

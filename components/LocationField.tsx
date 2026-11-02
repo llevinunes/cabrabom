@@ -133,15 +133,14 @@ export function LocationField({
               <span className="text-sm text-secundario">{hint}</span>
             </span>
           </button>
-          {state.mode !== "gps" && (
-            <button
-              type="button"
-              onClick={() => switchTo({ mode: "cep" })}
-              className="self-start text-sm font-semibold text-laranja-texto underline"
-            >
-              Informar o CEP
-            </button>
-          )}
+          {/* Always available, even after the GPS position is set (e.g. a wrong fix). */}
+          <button
+            type="button"
+            onClick={() => switchTo({ mode: "cep" })}
+            className="self-start text-sm font-semibold text-laranja-texto underline"
+          >
+            Informar o CEP
+          </button>
           {error && <FieldError id="location-error">{error}</FieldError>}
         </>
       )}

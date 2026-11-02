@@ -36,3 +36,6 @@ Para registrar uma decisão nova, copie `0000-modelo.md`, use o próximo número
 | [0028](0028-codigo-em-ingles-interface-em-portugues.md) | Código em inglês, interface em português | Aceita | Usuário |
 | [0029](0029-supabase-local-via-cli-no-desenvolvimento.md) | Supabase local via CLI no desenvolvimento | Aceita | Usuário e IA |
 | [0030](0030-acesso-ao-banco-so-pelo-servidor-via-rpc.md) | Acesso ao banco só pelo servidor, via RPC | Aceita | IA |
+| [0031](0031-migracoes-numeradas-em-sequencia.md) | Migrações numeradas em sequência | Aceita | Usuário |
+| [0032](0032-simulador-do-webhook-do-whatsapp-em-desenvolvimento.md) | Simulador do webhook do WhatsApp em desenvolvimento | Aceita | Usuário e IA |
+| [0033](0033-sessoes-proprias-em-vez-de-supabase-auth.md) | Sessões próprias em vez do Supabase Auth | Aceita | IA |

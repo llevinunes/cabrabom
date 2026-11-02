@@ -34,6 +34,10 @@ O primeiro número só muda por decisão explícita do usuário. Use `npm versio
 - **Inglês:** funções, variáveis, tipos, componentes, nomes de arquivos e pastas de código, e o schema do banco (tabelas, colunas, funções SQL).
 - **Português:** textos da interface, rotas da URL (`/prestador`, `/painel`, `/entrar`...), commits, ADRs e documentação.
 
+## Migrações
+
+Em `supabase/migrations/`, com número sequencial de 4 dígitos (`0003_login.sql`), nunca timestamp. A primeira linha é `-- NNNN · vX.Y.Z · PR #N`. Migração já mergeada não se edita: crie outra (ADR 0031).
+
 ## Git
 
 - Siga o fluxo de `develop`, branches `feature/*` e pull requests revisados pelo usuário. Nunca faça o merge você mesmo.

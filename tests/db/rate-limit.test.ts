@@ -22,3 +22,12 @@ test("old hits fall out of the window", async () => {
     .eq("key", "code:1.2.3.4");
   expect(await withinLimit(db, "code:1.2.3.4", 1, 10)).toBe(true);
 });
+
+test("blocked attempts are not recorded, so they do not extend the lockout", async () => {
+  for (let i = 0; i < 4; i++) await withinLimit(db, "code:9.9.9.9", 2, 10);
+  const { count } = await db
+    .from("rate_limit_hits")
+    .select("id", { count: "exact", head: true })
+    .eq("key", "code:9.9.9.9");
+  expect(count).toBe(2);
+});

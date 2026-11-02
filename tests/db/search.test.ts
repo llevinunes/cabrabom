@@ -201,10 +201,11 @@ describe("set_provider_location", () => {
       p_city: "Campina Grande",
     });
     expect(error).toBeNull();
+    // stored rounded to 2 decimals (ADR 0034)
     const { data: distance } = await db.rpc("distance_to_provider", {
       p_provider_id: JOAO_ID,
-      p_lat: CITY_CENTRE.lat,
-      p_lng: CITY_CENTRE.lng,
+      p_lat: -7.23,
+      p_lng: -35.88,
     });
     expect(Number(distance)).toBe(0);
   });

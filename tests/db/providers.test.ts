@@ -57,3 +57,18 @@ test("createProvider accepts a place without neighborhood or city", async () => 
   const { data } = await db.from("providers").select("neighborhood, city").eq("id", id).single();
   expect(data).toEqual({ neighborhood: null, city: null });
 });
+
+test("stored locations are rounded to about 1 km so a home cannot be triangulated", async () => {
+  const plumber = (await categoryBySlug(db, "encanador"))!.id;
+  const { id } = await createProvider(
+    db,
+    { name: "Arredondado", categoryIds: [plumber], place: { lat: -7.2234, lng: -35.9123, neighborhood: null, city: null } },
+    "5583955554444",
+  );
+  const distance = await db.rpc("distance_to_provider", { p_provider_id: id, p_lat: -7.22, p_lng: -35.91 });
+  expect(Number(distance.data)).toBe(0);
+
+  await db.rpc("set_provider_location", { p_provider_id: id, p_lat: -7.2389, p_lng: -35.8761 });
+  const moved = await db.rpc("distance_to_provider", { p_provider_id: id, p_lat: -7.24, p_lng: -35.88 });
+  expect(Number(moved.data)).toBe(0);
+});

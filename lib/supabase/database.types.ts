@@ -180,6 +180,9 @@ isOneToOne: false
             "assert_valid_coordinates":
 { Args: { "p_lat": number,"p_lng": number }; Returns: undefined
                            },
+"coarse_point":
+{ Args: { "p_lat": number,"p_lng": number }; Returns: unknown
+                           },
 "create_provider":
 { Args: { "p_category_ids"?: (number)[],"p_city"?: string,"p_lat": number,"p_lng": number,"p_name": string,"p_neighborhood"?: string,"p_whatsapp": string }; Returns: string
                            },

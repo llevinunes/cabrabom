@@ -1,5 +1,6 @@
 -- Development seed. The sample providers match the reference screens and live in
--- Campina Grande (PB), around the city centre (-7.2307, -35.8811).
+-- Campina Grande (PB), around the city centre (-7.2307, -35.8811). Locations go through
+-- coarse_point like any other provider (~1 km precision, ADR 0034).
 
 insert into public.categories (name, slug) values
   ('Eletricista', 'eletricista'),
@@ -15,13 +16,13 @@ insert into public.providers
 values
   -- ~1.2 km north of the centre
   ('00000000-0000-4000-8000-000000000001', 'João Silva', '5583900000001',
-   extensions.st_makepoint(-35.8811, -7.2199)::extensions.geography, 'Centro', 'Campina Grande', false, 8, now()),
+   public.coarse_point(-7.2199, -35.8811), 'Centro', 'Campina Grande', false, 8, now()),
   -- ~3.4 km east
   ('00000000-0000-4000-8000-000000000002', 'Antônio Ferreira', '5583900000002',
-   extensions.st_makepoint(-35.8503, -7.2307)::extensions.geography, 'Alto da Serra', 'Campina Grande', false, null, now()),
+   public.coarse_point(-7.2307, -35.8503), 'Alto da Serra', 'Campina Grande', false, null, now()),
   -- ~6.8 km south, busy
   ('00000000-0000-4000-8000-000000000003', 'Raimundo Costa', '5583900000003',
-   extensions.st_makepoint(-35.8811, -7.2922)::extensions.geography, 'Pedra Branca', 'Campina Grande', true, null, now());
+   public.coarse_point(-7.2922, -35.8811), 'Pedra Branca', 'Campina Grande', true, null, now());
 
 insert into public.provider_categories (provider_id, category_id)
 select p.id, c.id

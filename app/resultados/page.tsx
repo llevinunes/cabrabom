@@ -41,7 +41,7 @@ export default async function Results({ searchParams }: PageProps<"/resultados">
       <ScreenHeader
         title={category.name}
         subtitle={`Até ${search.radiusKm} km de você · ${results.length} ${results.length === 1 ? "encontrado" : "encontrados"}`}
-        backHref="/"
+        backHref={`/?${toQuery(search)}`}
       />
 
       <nav aria-label="Filtros" className="flex flex-wrap gap-2">

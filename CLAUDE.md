@@ -29,6 +29,11 @@ Todo PR sobe a versão no `package.json` uma única vez, de acordo com o peso da
 
 O primeiro número só muda por decisão explícita do usuário. Use `npm version minor --no-git-tag-version` ou `npm version patch --no-git-tag-version` e faça o commit como `chore: versão X.Y.Z`.
 
+## Idioma
+
+- **Inglês:** funções, variáveis, tipos, componentes, nomes de arquivos e pastas de código, e o schema do banco (tabelas, colunas, funções SQL).
+- **Português:** textos da interface, rotas da URL (`/prestador`, `/painel`, `/entrar`...), commits, ADRs e documentação.
+
 ## Git
 
 - Siga o fluxo de `develop`, branches `feature/*` e pull requests revisados pelo usuário. Nunca faça o merge você mesmo.

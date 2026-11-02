@@ -1,6 +1,7 @@
 # Material de referência local (não versionado)
 /referencias/
 /docs/superpowers/
+/.superpowers/
 
 # Sistema
 .DS_Store
@@ -24,3 +25,8 @@ test-results/
 # Supabase
 supabase/.temp/
 supabase/.branches/
+
+# Next / Vercel
+*.pem
+.vercel
+npm-debug.log*

@@ -73,9 +73,10 @@ npm run test:e2e   # fluxo completo no navegador (Playwright)
 app/          rotas e telas (Next.js)
 components/   componentes de interface do guia de design
 lib/          regras de negócio, independentes do Next.js
-servidor/     código de servidor que depende do Next (cookies, sessão)
+server/       código de servidor que depende do Next (cookies, sessão)
 supabase/     migrações e dados de exemplo
 design/       logo e SVGs do ícone
+scripts/      utilitários (ex.: npm run icons gera os PNGs do PWA)
 docs/decisoes registros de decisão (ADRs)
 e2e/, tests/  testes
 ```

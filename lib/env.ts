@@ -13,6 +13,7 @@ const schema = z.object({
     .default("http://localhost:3000")
     .transform((url) => url.replace(/\/+$/, "")),
   WHATSAPP_CABRABOM_NUMBER: z.string().regex(/^\d{12,13}$/, "only digits: 55 + area code + number"),
+  COOKIE_SECRET: z.string().min(32, "at least 32 characters (signs cookies the server must trust)"),
   WHATSAPP_VERIFY_TOKEN: optional,
   META_APP_SECRET: optional,
 });

@@ -39,12 +39,13 @@ export function parseSignupForm(
 export const pendingSignupSchema = z.object({
   name,
   categoryIds,
+  consent: z.literal(true),
   place: z
     .object({
       lat: z.number(),
       lng: z.number(),
-      neighborhood: z.string().nullable(),
-      city: z.string().nullable(),
+      neighborhood: z.string().max(80).nullable(),
+      city: z.string().max(80).nullable(),
     })
     .refine((place) => isInBrazil(place.lat, place.lng)),
 });

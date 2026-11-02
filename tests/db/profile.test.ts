@@ -12,6 +12,8 @@ test("publicProfile returns what the profile page shows, never the location", as
     id: JOAO_ID,
     name: "João Silva",
     neighborhood: "Centro",
+    city: "Campina Grande",
+    state: "PB",
     busy: false,
     yearsExperience: 8,
     bio: null,

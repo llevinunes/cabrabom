@@ -79,13 +79,16 @@ describe("panel actions", () => {
       name: "João Silva",
       busy: false,
       neighborhood: "Centro",
+      city: "Campina Grande",
+      state: "PB",
       recommendationCount: 0,
       servicesCount: 0,
     });
   });
 
   test("updateProviderLocation stores the new place", async () => {
-    await updateProviderLocation(db, JOAO_ID, { lat: -7.24, lng: -35.88, neighborhood: "Catolé", city: "Campina Grande" });
-    expect((await providerDashboard(db, JOAO_ID))?.neighborhood).toBe("Catolé");
+    await updateProviderLocation(db, JOAO_ID, { lat: -7.24, lng: -35.88, neighborhood: null, city: "Campina Grande", state: "PB" });
+    const dashboard = await providerDashboard(db, JOAO_ID);
+    expect(dashboard).toMatchObject({ neighborhood: null, city: "Campina Grande", state: "PB" });
   });
 });

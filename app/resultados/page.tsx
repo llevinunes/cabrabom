@@ -9,6 +9,7 @@ import { applyFilters, nextRadius } from "@/lib/search/filters";
 import { readSearchParams, toQuery, type SearchParams } from "@/lib/search/params";
 import { searchProviders } from "@/lib/search/search";
 import { createServerClient } from "@/lib/supabase/server";
+import { placeLabel } from "@/lib/text";
 
 type Filters = { onlyFree: boolean; mostRecommended: boolean };
 

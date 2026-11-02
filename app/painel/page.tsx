@@ -6,7 +6,7 @@ import { providerDashboard } from "@/lib/providers/panel";
 import { deadlineText } from "@/lib/service-requests/deadline";
 import { pendingRequests } from "@/lib/service-requests/queries";
 import { createServerClient } from "@/lib/supabase/server";
-import { firstName } from "@/lib/text";
+import { firstName, placeLabel } from "@/lib/text";
 import { getCurrentProvider } from "@/server/current-provider";
 import { getCurrentSession } from "@/server/session";
 import { signOut } from "@/server/session-actions";
@@ -77,7 +77,7 @@ export default async function ProviderPanel() {
       <section className="flex items-center justify-between gap-3 rounded-card border border-borda bg-superficie p-4">
         <div className="flex flex-col">
           <span className="text-sm text-secundario">Onde você atende</span>
-          <span className="font-bold">{dashboard.neighborhood ?? "Bairro não identificado"}</span>
+          <span className="font-bold">{placeLabel(dashboard) ?? "Localização não identificada"}</span>
         </div>
         <Link href="/painel/localizacao" className="text-sm font-semibold text-laranja-texto underline">
           Mudar localização

@@ -4,6 +4,8 @@ export type SearchResult = {
   id: string;
   name: string;
   neighborhood: string | null;
+  city: string | null;
+  state: string | null;
   busy: boolean;
   distanceKm: number;
   categories: string[];
@@ -26,6 +28,8 @@ export async function searchProviders(
     id: row.id,
     name: row.name,
     neighborhood: row.neighborhood,
+    city: row.city,
+    state: row.state,
     busy: row.busy,
     distanceKm: Number(row.distance_km),
     categories: row.categories,

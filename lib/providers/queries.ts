@@ -21,6 +21,7 @@ export async function createProvider(
     p_lng: input.place.lng,
     p_neighborhood: input.place.neighborhood ?? undefined,
     p_city: input.place.city ?? undefined,
+    p_state: input.place.state ?? undefined,
     p_category_ids: input.categoryIds,
   });
   if (error) throw error;

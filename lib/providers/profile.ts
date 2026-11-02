@@ -7,6 +7,8 @@ export type PublicProfile = {
   id: string;
   name: string;
   neighborhood: string | null;
+  city: string | null;
+  state: string | null;
   busy: boolean;
   yearsExperience: number | null;
   bio: string | null;
@@ -21,7 +23,7 @@ export async function publicProfile(db: Db, id: string): Promise<PublicProfile |
   if (!isUuid(id)) return null;
   const { data, error } = await db
     .from("providers")
-    .select("id, name, neighborhood, busy, years_experience, bio, whatsapp, hidden, provider_categories(categories(id, name, slug, active))")
+    .select("id, name, neighborhood, city, state, busy, years_experience, bio, whatsapp, hidden, provider_categories(categories(id, name, slug, active))")
     .eq("id", id)
     .maybeSingle();
   if (error) throw error;
@@ -48,6 +50,8 @@ export async function publicProfile(db: Db, id: string): Promise<PublicProfile |
     id: data.id,
     name: data.name,
     neighborhood: data.neighborhood,
+    city: data.city,
+    state: data.state,
     busy: data.busy,
     yearsExperience: data.years_experience,
     bio: data.bio,

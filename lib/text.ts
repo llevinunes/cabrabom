@@ -18,3 +18,13 @@ export function formatKm(km: number): string {
   const value = km.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
   return `${value} km`;
 }
+
+/**
+ * What is shown about where a provider is: the neighborhood, or "City - UF" when the
+ * geocoder only knew the city. Never more precise than that (spec section 9).
+ */
+export function placeLabel(place: { neighborhood: string | null; city: string | null; state: string | null }): string | null {
+  if (place.neighborhood) return place.neighborhood;
+  if (!place.city) return null;
+  return place.state ? `${place.city} - ${place.state}` : place.city;
+}

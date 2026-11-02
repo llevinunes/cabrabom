@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { DEFAULT_RADIUS_KM, normalizeRadius, readSearchParams, toQuery } from "@/lib/search/params";
+import { DEFAULT_RADIUS_KM, normalizeRadius, readSearchDefaults, readSearchParams, toQuery } from "@/lib/search/params";
 
 describe("normalizeRadius", () => {
   test("defaults to 10 km and stays within 1–100 km", () => {
@@ -60,5 +60,31 @@ describe("readSearchParams", () => {
   test("toQuery round-trips", () => {
     const params = readSearchParams(complete)!;
     expect(readSearchParams(Object.fromEntries(new URLSearchParams(toQuery(params))))).toEqual(params);
+  });
+});
+
+describe("readSearchDefaults", () => {
+  test("prefills the search form from a results URL", () => {
+    expect(
+      readSearchDefaults({ nome: "Maria", categoria: "eletricista", detalhes: "Trocar tomada", lat: "-7.231", lng: "-35.881", raio: "25" }),
+    ).toEqual({
+      name: "Maria",
+      category: "eletricista",
+      details: "Trocar tomada",
+      radiusKm: 25,
+      position: { lat: -7.231, lng: -35.881 },
+    });
+  });
+
+  test("accepts partial or broken URLs, keeping only what is usable", () => {
+    expect(readSearchDefaults({})).toEqual({ name: "", category: "", details: "", radiusKm: 10, position: null });
+    expect(readSearchDefaults({ nome: "x".repeat(80), lat: "abc", lng: "1", raio: "999" })).toEqual({
+      name: "x".repeat(60),
+      category: "",
+      details: "",
+      radiusKm: 100,
+      position: null,
+    });
+    expect(readSearchDefaults({ lat: "40.7", lng: "-74.0" }).position).toBeNull(); // outside Brazil
   });
 });

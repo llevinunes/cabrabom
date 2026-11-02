@@ -1,3 +1,4 @@
+import { isInBrazil } from "@/lib/location/resolve";
 import { searchTextSchema } from "./form";
 
 export const DEFAULT_RADIUS_KM = 10;
@@ -61,4 +62,28 @@ function toCoordinate(value: string | undefined, limit: number): number | null {
   if (!value?.trim()) return null;
   const number = Number(value);
   return Number.isFinite(number) && Math.abs(number) <= limit ? roundCoordinate(number) : null;
+}
+
+export type SearchDefaults = {
+  name: string;
+  category: string;
+  details: string;
+  radiusKm: number;
+  position: { lat: number; lng: number } | null;
+};
+
+/**
+ * Prefills the search form (screen 01) from a URL such as the one "Voltar" builds on
+ * /resultados. Lenient: keeps whatever is usable, trimmed to the form's limits.
+ */
+export function readSearchDefaults(params: Record<string, Raw>): SearchDefaults {
+  const lat = toCoordinate(first(params.lat), 90);
+  const lng = toCoordinate(first(params.lng), 180);
+  return {
+    name: (first(params.nome) ?? "").slice(0, 60),
+    category: (first(params.categoria) ?? "").slice(0, 60),
+    details: (first(params.detalhes) ?? "").slice(0, 500),
+    radiusKm: normalizeRadius(params.raio),
+    position: lat !== null && lng !== null && isInBrazil(lat, lng) ? { lat, lng } : null,
+  };
 }

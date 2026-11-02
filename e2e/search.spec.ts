@@ -68,6 +68,7 @@ test("the CEP field formats as it is typed and stops at 8 digits", async ({ page
   await expect(cep).toHaveValue("58400");
 });
 
+
 test("tapping anywhere on a provider card opens the profile, except the WhatsApp button", async ({ page }) => {
   const results = "/resultados?nome=Maria&categoria=eletricista&detalhes=x&lat=-7.2307&lng=-35.8811&raio=10";
   await page.goto(results);
@@ -83,4 +84,22 @@ test("tapping anywhere on a provider card opens the profile, except the WhatsApp
   await page.goto(results);
   await tapOn("JS"); // the avatar
   await expect(page).toHaveURL(/\/p\/00000000-0000-4000-8000-000000000001\?/);
+});
+
+test("Voltar from the results brings the search back to the form", async ({ page }) => {
+  await page.goto("/resultados?nome=Maria&categoria=encanador&detalhes=Pia%20entupida&lat=-7.231&lng=-35.881&raio=25");
+  await page.getByRole("link", { name: "Voltar" }).click();
+  await page.waitForURL((url) => url.pathname === "/");
+
+  await expect(page.getByLabel("Seu nome")).toHaveValue("Maria");
+  await expect(page.getByRole("radio", { name: "Encanador" })).toBeChecked();
+  await expect(page.getByLabel("Detalhes do serviço")).toHaveValue("Pia entupida");
+  await expect(page.getByRole("button", { name: /Localização definida/ })).toBeVisible();
+  await expect(page.getByLabel("Raio de busca")).toHaveValue("25");
+
+  // searching again works straight away, with the same position
+  await page.getByRole("button", { name: "Buscar prestadores" }).click();
+  await page.waitForURL((url) => url.pathname === "/resultados");
+  expect(new URL(page.url()).searchParams.get("raio")).toBe("25");
+  expect(new URL(page.url()).searchParams.get("lat")).toBe("-7.231");
 });

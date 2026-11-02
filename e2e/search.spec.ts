@@ -55,3 +55,15 @@ test("pages tell browsers not to send our URLs to other sites", async ({ page })
   const response = await page.goto("/");
   expect(response?.headers()["referrer-policy"]).toBe("same-origin");
 });
+
+test("the CEP field formats as it is typed and stops at 8 digits", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Informar o CEP" }).click();
+  const cep = page.getByLabel("CEP");
+  await expect(cep).toBeFocused();
+  await cep.pressSequentially("584000001234");
+  await expect(cep).toHaveValue("58400-000");
+  await cep.fill("");
+  await cep.pressSequentially("58.4a00");
+  await expect(cep).toHaveValue("58400");
+});

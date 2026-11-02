@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Field, FieldError } from "@/components/ui/Field";
 import { Icon } from "@/components/ui/Icon";
+import { CEP_MAX_LENGTH, formatCep } from "@/lib/location/cep-format";
 
 type State =
   | { mode: "idle" }
@@ -26,6 +27,7 @@ export function LocationField({
   defaultCep?: string;
 }) {
   const [state, setState] = useState<State>(defaultCep ? { mode: "cep" } : { mode: "idle" });
+  const [cep, setCep] = useState(() => formatCep(defaultCep ?? ""));
   const container = useRef<HTMLFieldSetElement>(null);
   const switchedByUser = useRef(false);
 
@@ -82,7 +84,10 @@ export function LocationField({
             inputMode="numeric"
             autoComplete="postal-code"
             placeholder="00000-000"
-            defaultValue={defaultCep}
+            maxLength={CEP_MAX_LENGTH}
+            pattern="\d{5}-\d{3}"
+            value={cep}
+            onChange={(event) => setCep(formatCep(event.target.value))}
             error={error}
           />
           <button type="button" onClick={useGps} className="self-start text-sm font-semibold text-laranja-texto underline">

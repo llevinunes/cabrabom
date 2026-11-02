@@ -13,7 +13,7 @@ export function deadlineText(createdAt: Date, now: Date = new Date()): string {
   const left = createdAt.getTime() + EXPIRY_HOURS * HOUR - now.getTime();
   if (left <= 0) return "expirada";
   if (left >= 24 * HOUR) {
-    const days = Math.floor(left / (24 * HOUR));
+    const days = Math.round(left / (24 * HOUR));
     return `expira em ${days} ${days === 1 ? "dia" : "dias"}`;
   }
   const hours = Math.floor(left / HOUR);

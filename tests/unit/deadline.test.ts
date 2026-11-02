@@ -7,7 +7,10 @@ const at = (iso: string) => new Date(iso);
 describe("deadlineText", () => {
   test("counts down the 2 days of an open request", () => {
     expect(deadlineText(created, created)).toBe("expira em 2 dias");
-    expect(deadlineText(created, at("2026-11-01T13:00:00Z"))).toBe("expira em 1 dia");
+    // a few seconds or hours after arriving it still reads as 2 days, not 1
+    expect(deadlineText(created, at("2026-11-01T12:00:05Z"))).toBe("expira em 2 dias");
+    expect(deadlineText(created, at("2026-11-01T13:00:00Z"))).toBe("expira em 2 dias");
+    expect(deadlineText(created, at("2026-11-02T06:00:00Z"))).toBe("expira em 1 dia");
     expect(deadlineText(created, at("2026-11-02T13:00:00Z"))).toBe("expira em 23 h");
     expect(deadlineText(created, at("2026-11-03T11:30:00Z"))).toBe("expira em menos de 1 h");
     expect(deadlineText(created, at("2026-11-03T12:00:01Z"))).toBe("expirada");

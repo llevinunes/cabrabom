@@ -8,7 +8,19 @@
 
 O CabraBom ajuda quem precisa de um serviço (eletricista, encanador, diarista...) a encontrar prestadores perto de casa, ver quem está livre agora e conversar direto pelo WhatsApp. O nome vem da expressão nordestina "cabra bom": alguém de confiança, que resolve.
 
-> 🚧 **Em construção.** O projeto está na Fase 1 (núcleo): cadastro do prestador, busca, perfil e contato pelo WhatsApp.
+> 🚧 **Em construção.** A Fase 1 (núcleo) está pronta: cadastro do prestador, busca, perfil, contato pelo WhatsApp e painel. A Fase 2 traz o ciclo do serviço (aceitar, confirmar, finalizar e recomendar).
+
+## Telas
+
+| Busca | Resultados | Perfil |
+|---|---|---|
+| <img src="docs/imagens/01-busca.png" width="220" alt="Tela de busca: nome, categoria, detalhes, localização e raio"> | <img src="docs/imagens/02-resultados.png" width="220" alt="Lista de prestadores com status livre ou ocupado"> | <img src="docs/imagens/03-perfil.png" width="220" alt="Perfil do prestador com botão Conversar no WhatsApp"> |
+
+| Cadastro do prestador | Painel | Pedido recebido |
+|---|---|---|
+| <img src="docs/imagens/07-cadastro.png" width="220" alt="Cadastro do prestador"> | <img src="docs/imagens/10-painel.png" width="220" alt="Painel do prestador com status e pedidos"> | <img src="docs/imagens/08-pedido.png" width="220" alt="Pedido recebido pelo prestador"> |
+
+As imagens são geradas com `npm run screenshots` (dados de exemplo do seed).
 
 ## Como funciona
 

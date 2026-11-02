@@ -54,6 +54,11 @@ export function LocationField({
           : "";
 
   function useGps() {
+    // Browsers only give the position on HTTPS (or localhost); e.g. a phone on http://10.0.1.x.
+    if (!window.isSecureContext) {
+      switchTo({ mode: "cep", reason: "A localização só funciona em conexão segura (HTTPS). Informe o CEP." });
+      return;
+    }
     if (!("geolocation" in navigator)) {
       switchTo({ mode: "cep", reason: "Seu navegador não informa a localização. Informe o CEP." });
       return;
@@ -61,7 +66,14 @@ export function LocationField({
     switchTo({ mode: "locating" });
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => setState({ mode: "gps", lat: coords.latitude, lng: coords.longitude }),
-      () => switchTo({ mode: "cep", reason: "Não conseguimos sua localização. Informe o CEP." }),
+      (error) =>
+        switchTo({
+          mode: "cep",
+          reason:
+            error.code === 1
+              ? "Permita o acesso à localização ou informe o CEP."
+              : "Não conseguimos sua localização. Informe o CEP.",
+        }),
       { enableHighAccuracy: false, timeout: 15_000, maximumAge: 300_000 },
     );
   }

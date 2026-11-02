@@ -30,3 +30,4 @@ supabase/.branches/
 *.pem
 .vercel
 npm-debug.log*
+certificates/

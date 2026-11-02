@@ -9,6 +9,9 @@ import { VERIFICATION_COOKIE } from "@/server/cookie-names";
 import { readCookie, setPrivateCookie } from "@/server/cookies";
 import { getClientIp } from "@/server/request-ip";
 
+/** Per IP in 10 minutes. Mobile carriers put many people behind one IP (CGNAT), so not too low. */
+const CODES_PER_IP = 20;
+
 export type StartLoginResult =
   | { ok: true; link: string; code: string; cabraBomNumber: string }
   | { ok: false; error: string };
@@ -23,7 +26,7 @@ export async function startLogin(): Promise<StartLoginResult> {
   let verification: Verification | null = existingId ? await findPendingVerification(db, existingId) : null;
 
   if (!verification) {
-    if (!(await withinLimit(db, `code:${await getClientIp()}`, 5, 10))) {
+    if (!(await withinLimit(db, `code:${await getClientIp()}`, CODES_PER_IP, 10))) {
       return { ok: false, error: "Muitas tentativas. Espere alguns minutos e tente de novo." };
     }
     verification = await startVerification(db);

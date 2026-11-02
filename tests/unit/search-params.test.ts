@@ -11,6 +11,8 @@ describe("normalizeRadius", () => {
     expect(normalizeRadius("12.7")).toBe(13);
     expect(normalizeRadius("abc")).toBe(10);
     expect(normalizeRadius(undefined)).toBe(10);
+    expect(normalizeRadius("")).toBe(10);
+    expect(normalizeRadius(" ")).toBe(10);
     expect(normalizeRadius(["30", "40"])).toBe(30);
   });
 });

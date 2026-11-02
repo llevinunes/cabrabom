@@ -17,8 +17,9 @@ const first = (value: Raw) => (Array.isArray(value) ? value[0] : value);
 
 /** Whole km between 1 and 100; anything else becomes the 10 km default. */
 export function normalizeRadius(value: Raw): number {
-  const number = Number(first(value));
-  if (first(value) === undefined || !Number.isFinite(number)) return DEFAULT_RADIUS_KM;
+  const text = first(value)?.trim();
+  const number = Number(text);
+  if (!text || !Number.isFinite(number)) return DEFAULT_RADIUS_KM;
   return Math.min(MAX_RADIUS_KM, Math.max(1, Math.round(number)));
 }
 

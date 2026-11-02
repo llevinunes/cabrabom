@@ -1,5 +1,17 @@
 -- Functions called through RPC by the server (service_role only, ADR 0030).
 
+create function public.assert_valid_coordinates(p_lat double precision, p_lng double precision)
+returns void
+language plpgsql
+immutable
+as $$
+begin
+  if p_lat is null or p_lng is null or p_lat not between -90 and 90 or p_lng not between -180 and 180 then
+    raise exception 'invalid coordinates: (%, %)', p_lat, p_lng using errcode = '22023';
+  end if;
+end;
+$$;
+
 -- Search (spec section 8): providers of a category within a radius,
 -- free first, then by distance, recommendations as tie-breaker.
 create function public.search_providers(
@@ -40,6 +52,7 @@ as $$
    where not p.hidden
      and st_dwithin(p.location, o.point, o.radius_m)
      and exists (select 1 from provider_categories x
+                  join categories xc on xc.id = x.category_id and xc.active
                   where x.provider_id = p.id and x.category_id = p_category_id)
    group by p.id, o.point
    order by p.busy asc, distance_km asc, recommendation_count desc;
@@ -78,6 +91,11 @@ as $$
 declare
   v_id uuid;
 begin
+  perform assert_valid_coordinates(p_lat, p_lng);
+  if coalesce(cardinality(p_category_ids), 0) = 0 then
+    raise exception 'a provider needs at least one category' using errcode = '22023';
+  end if;
+
   insert into providers (name, whatsapp, location, neighborhood, city, whatsapp_consent_at)
   values (p_name, p_whatsapp, st_makepoint(p_lng, p_lat)::geography, p_neighborhood, p_city, now())
   on conflict (whatsapp) do nothing
@@ -89,7 +107,7 @@ begin
   end if;
 
   insert into provider_categories (provider_id, category_id)
-  select v_id, unnest(p_category_ids);
+  select distinct v_id, unnest(p_category_ids);
 
   return v_id;
 end;
@@ -103,17 +121,21 @@ create function public.set_provider_location(
   p_city text
 )
 returns void
-language sql
+language plpgsql
 set search_path = public, extensions
 as $$
+begin
+  perform assert_valid_coordinates(p_lat, p_lng);
   update providers
      set location = st_makepoint(p_lng, p_lat)::geography,
          neighborhood = p_neighborhood,
          city = p_city
    where id = p_provider_id;
+end;
 $$;
 
 -- Only the server (service_role) may call these functions.
+revoke execute on function public.assert_valid_coordinates(double precision, double precision) from public, anon, authenticated;
 revoke execute on function public.search_providers(double precision, double precision, int, int) from public, anon, authenticated;
 revoke execute on function public.distance_to_provider(uuid, double precision, double precision) from public, anon, authenticated;
 revoke execute on function public.create_provider(text, text, double precision, double precision, text, text, int[]) from public, anon, authenticated;

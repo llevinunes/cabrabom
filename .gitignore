@@ -24,3 +24,8 @@ test-results/
 # Supabase
 supabase/.temp/
 supabase/.branches/
+
+# Next / Vercel
+*.pem
+.vercel
+npm-debug.log*

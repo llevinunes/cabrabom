@@ -28,6 +28,8 @@ export async function pendingRequests(db: Db, providerId: string): Promise<Pendi
 export type RequestForProvider = {
   status: string;
   createdAt: Date;
+  /** Set when the provider accepts; the client's link is /c/{clientToken}. */
+  clientToken: string | null;
   clientName: string;
   details: string;
   /** Computed from the position the client sent; approximate. */
@@ -42,7 +44,7 @@ export async function requestByToken(db: Db, token: string): Promise<RequestForP
   if (!TOKEN.test(token)) return null;
   const { data, error } = await db
     .from("service_requests")
-    .select("status, created_at, client_name, details, distance_km, categories(name), providers(id, whatsapp)")
+    .select("status, created_at, client_token, client_name, details, distance_km, categories(name), providers(id, whatsapp)")
     .eq("provider_token", token)
     .maybeSingle();
   if (error) throw error;
@@ -50,6 +52,7 @@ export async function requestByToken(db: Db, token: string): Promise<RequestForP
   return {
     status: data.status,
     createdAt: new Date(data.created_at),
+    clientToken: data.client_token,
     clientName: data.client_name,
     details: data.details,
     distanceKm: data.distance_km === null ? null : Number(data.distance_km),
@@ -57,4 +60,31 @@ export async function requestByToken(db: Db, token: string): Promise<RequestForP
     providerId: data.providers.id,
     providerWhatsapp: data.providers.whatsapp,
   };
+}
+
+export type AcceptedRequest = {
+  providerToken: string;
+  clientToken: string;
+  clientName: string;
+  category: string;
+  acceptedAt: Date;
+};
+
+/** "Esperando o cliente confirmar": accepted by the provider, not confirmed by the client yet. */
+export async function acceptedRequests(db: Db, providerId: string): Promise<AcceptedRequest[]> {
+  const { data, error } = await db
+    .from("service_requests")
+    .select("provider_token, client_token, client_name, accepted_at, categories(name)")
+    .eq("provider_id", providerId)
+    .eq("status", "accepted")
+    .order("accepted_at", { ascending: false })
+    .limit(PANEL_LIMIT);
+  if (error) throw error;
+  return data.map((row) => ({
+    providerToken: row.provider_token,
+    clientToken: row.client_token!,
+    clientName: row.client_name,
+    category: row.categories.name,
+    acceptedAt: new Date(row.accepted_at!),
+  }));
 }

@@ -3,15 +3,25 @@ import { Button } from "@/components/ui/Button";
 import { Chip } from "@/components/ui/Chip";
 import { Icon } from "@/components/ui/Icon";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { ShareLink } from "@/components/ShareLink";
 import { isExpired, receivedText } from "@/lib/service-requests/deadline";
+import { clientLink } from "@/lib/service-requests/links";
 import { requestByToken } from "@/lib/service-requests/queries";
 import { createServerClient } from "@/lib/supabase/server";
-import { formatKm } from "@/lib/text";
+import { firstName, formatKm } from "@/lib/text";
 import { getCurrentSession } from "@/server/session";
 import { signOut } from "@/server/session-actions";
+import { acceptRequest } from "./actions";
 
-// Screen 08 · the request behind the link in the client's first WhatsApp message.
-// Phase 1 is read-only: accepting comes with the service lifecycle (phase 2).
+const FINAL_STATES: Record<string, string> = {
+  in_progress: "Serviço em andamento",
+  completed: "Serviço finalizado",
+  recommended: "Serviço finalizado",
+  cancelled: "Serviço cancelado",
+};
+
+// Screen 08 · the request behind the link in the client's first WhatsApp message;
+// once accepted, screen 09 with the link for the client.
 export default async function ServiceRequestForProvider({ params }: PageProps<"/s/[token]">) {
   const { token } = await params;
   const session = await getCurrentSession();
@@ -33,6 +43,47 @@ export default async function ServiceRequestForProvider({ params }: PageProps<"/
             Sair
           </Button>
         </form>
+      </main>
+    );
+  }
+
+  if (request.status === "accepted" && request.clientToken) {
+    const client = firstName(request.clientName);
+    return (
+      <main className="flex flex-col gap-5">
+        <span className="flex size-16 items-center justify-center rounded-full bg-livre-fundo text-livre-texto">
+          <Icon name="check" className="size-8" />
+        </span>
+        <div className="flex flex-col gap-2">
+          <h1 className="text-[28px] leading-tight font-black">Serviço aceito!</h1>
+          <p className="text-secundario [overflow-wrap:anywhere]">
+            Agora envie este link para <bdi>{client}</bdi> confirmar. Assim dá para acompanhar o serviço e te recomendar
+            no final.
+          </p>
+        </div>
+        <ShareLink
+          url={clientLink(request.clientToken)}
+          shareLabel={`Enviar para ${client}`}
+          text="Confirme o serviço no CabraBom:"
+        />
+        <p className="text-[13px] text-secundario">
+          Você aparece como ocupado quando o cliente confirmar. Ao finalizar, volta a ficar livre.
+        </p>
+        <Button variant="outline" href="/painel">
+          Ir para o painel
+        </Button>
+      </main>
+    );
+  }
+
+  const finalState = FINAL_STATES[request.status];
+  if (finalState) {
+    return (
+      <main className="flex flex-col gap-5">
+        <ScreenHeader title={finalState} subtitle={request.category} backHref="/painel" />
+        <Button variant="outline" href="/painel">
+          Ir para o painel
+        </Button>
       </main>
     );
   }
@@ -74,9 +125,11 @@ export default async function ServiceRequestForProvider({ params }: PageProps<"/
       <p className="rounded-campo bg-cabra p-4 text-sm font-medium">
         Se não for aceita, esta solicitação expira em 2 dias.
       </p>
-      <p className="text-[13px] text-secundario">
-        Combine preço e horário com o cliente pelo WhatsApp. Em breve você poderá aceitar o pedido por aqui.
-      </p>
+      <form action={acceptRequest}>
+        <input type="hidden" name="token" value={token} />
+        <Button type="submit">Aceitar serviço</Button>
+      </form>
+      <p className="text-[13px] text-secundario">Combine preço e horário com o cliente pelo WhatsApp.</p>
       <Button variant="outline" href="/painel">
         Ir para o painel
       </Button>

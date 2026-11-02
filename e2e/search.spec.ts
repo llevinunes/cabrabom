@@ -20,7 +20,9 @@ test("a client searches without login and sees free providers first", async ({ p
   await expect(names).toHaveText(["João Silva", "Antônio Ferreira", "Raimundo Costa"]);
 
   await page.getByRole("link", { name: "Só livres" }).click();
+  await expect(page.getByRole("link", { name: "Só livres, ativado" })).toBeVisible();
   await expect(names).toHaveText(["João Silva", "Antônio Ferreira"]);
+  expect(new URL(page.url()).searchParams.get("lat")).toBe("-7.231");
   await expect(page.getByText("Até 10 km de você · 2 encontrados")).toBeVisible();
 
   await page.getByRole("link", { name: /Raio de 10 km/ }).click();
@@ -47,4 +49,9 @@ test("an empty result suggests a wider radius", async ({ page }) => {
   await page.goto("/resultados?nome=Maria&categoria=pintor&detalhes=x&lat=-7.2307&lng=-35.8811&raio=10");
   await expect(page.getByText("Nenhum prestador encontrado até 10 km. Tente aumentar o raio.")).toBeVisible();
   await expect(page.getByRole("link", { name: "Buscar até 25 km" })).toBeVisible();
+});
+
+test("pages tell browsers not to send our URLs to other sites", async ({ page }) => {
+  const response = await page.goto("/");
+  expect(response?.headers()["referrer-policy"]).toBe("same-origin");
 });

@@ -20,12 +20,14 @@ test("the provider sees pending requests, opens one and switches status", async 
   await expect(card.getByText(`${CLIENT} · Eletricista`)).toBeVisible();
   await expect(card.getByText(/expira em (2 dias|1 dia)/)).toBeVisible();
 
+  // The switch keeps one name; aria-checked carries the state.
   const status = page.getByRole("switch", { name: "Livre para novos serviços" });
   await expect(status).toHaveAttribute("aria-checked", "true");
   await status.click();
-  await expect(page.getByRole("switch", { name: "Ocupado no momento" })).toHaveAttribute("aria-checked", "false");
-  await page.getByRole("switch", { name: "Ocupado no momento" }).click();
-  await expect(page.getByRole("switch", { name: "Livre para novos serviços" })).toBeVisible();
+  await expect(page.getByText("Ocupado no momento")).toBeVisible();
+  await expect(status).toHaveAttribute("aria-checked", "false");
+  await status.click();
+  await expect(status).toHaveAttribute("aria-checked", "true");
 
   await card.getByRole("link", { name: "Ver pedido" }).click();
   await expect(page).toHaveURL(new RegExp(`/s/${TOKEN}$`));
@@ -55,4 +57,25 @@ test("the provider can change where they work", async ({ page, context }) => {
   await page.getByRole("button", { name: "Salvar localização" }).click();
   await page.waitForURL((url) => url.pathname === "/painel", { timeout: 10_000 });
   await expect(page.getByText("Onde você atende")).toBeVisible();
+});
+
+test("long or direction-reversing client text stays inside the provider's screens", async ({ page, context }) => {
+  const token = `e2eLongo${Date.now().toString(36)}`.padEnd(24, "0").slice(0, 24);
+  await createRequestForJoao("\u202EAna Maria de Souza Albuquerque", token, "x".repeat(500));
+  await page.goto("/painel");
+  await loginWithSimulator(page, context, JOAO.phone);
+  await page.waitForURL((url) => url.pathname === "/painel", { timeout: 10_000 });
+
+  const noSideScroll = () => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth);
+  expect(await noSideScroll()).toBe(true);
+  await expect(page.getByRole("listitem").filter({ hasText: "Ana Maria" }).getByText(/expira em/)).toBeInViewport();
+
+  await page.goto(`/s/${token}`);
+  expect(await noSideScroll()).toBe(true);
+});
+
+test("a logged-in person who is not a provider is sent to the signup, not to login", async ({ page, context }) => {
+  await page.goto("/painel/localizacao");
+  await loginWithSimulator(page, context, "83 95555-3434");
+  await page.waitForURL((url) => url.pathname === "/prestador", { timeout: 10_000 });
 });

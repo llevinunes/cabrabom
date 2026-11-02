@@ -50,6 +50,8 @@ cp .env.example .env.local
 npx supabase status -o env
 # copie API_URL para SUPABASE_URL, SERVICE_ROLE_KEY para SUPABASE_SERVICE_ROLE_KEY
 # e ANON_KEY para SUPABASE_ANON_KEY (esta só é usada pelos testes)
+node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))"
+# cole o resultado em COOKIE_SECRET
 
 # 4. App
 npm run dev

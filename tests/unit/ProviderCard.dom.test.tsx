@@ -46,3 +46,10 @@ describe("ProviderCard", () => {
     expect(screen.getByText("1,2 km")).toBeInTheDocument();
   });
 });
+
+test("with href, the name links to the profile and the chat action stays separate", () => {
+  render(<ProviderCard provider={joao} chatAction={action} href="/p/1?nome=Maria" />);
+  expect(screen.getByRole("link", { name: "João Silva" })).toHaveAttribute("href", "/p/1?nome=Maria");
+  expect(screen.getAllByRole("link")).toHaveLength(1);
+  expect(screen.getByRole("button", { name: "Conversar no WhatsApp" }).closest("a")).toBeNull();
+});

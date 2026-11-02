@@ -82,8 +82,8 @@ export default async function Results({ searchParams }: PageProps<"/resultados">
           {results.map((provider) => (
             <li key={provider.id}>
               <ProviderCard
-                provider={{ ...provider, neighborhood: placeLabel(provider) }}
-                title={<Link href={`/p/${provider.id}?${profileQuery}`}>{provider.name}</Link>}
+                provider={provider}
+                href={`/p/${provider.id}?${profileQuery}`}
                 chatAction={<ChatButton providerId={provider.id} search={search} offersCategory />}
               />
             </li>

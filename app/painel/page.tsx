@@ -4,7 +4,7 @@ import { BrandMark } from "@/components/ui/BrandMark";
 import { Button } from "@/components/ui/Button";
 import { providerDashboard } from "@/lib/providers/panel";
 import { deadlineText } from "@/lib/service-requests/deadline";
-import { pendingRequests } from "@/lib/service-requests/queries";
+import { acceptedRequests, pendingRequests } from "@/lib/service-requests/queries";
 import { createServerClient } from "@/lib/supabase/server";
 import { firstName, placeLabel } from "@/lib/text";
 import { getCurrentProvider } from "@/server/current-provider";
@@ -21,7 +21,7 @@ function Stat({ value, label }: { value: number; label: string }) {
   );
 }
 
-// Screen 10 · provider panel. "Em andamento" comes with the service lifecycle (phase 2).
+// Screen 10 · provider panel.
 export default async function ProviderPanel() {
   // proxy.ts only checks that a cookie exists; the session itself may be gone.
   if (!(await getCurrentSession())) redirect("/entrar?voltar=/painel");
@@ -29,7 +29,11 @@ export default async function ProviderPanel() {
   if (!provider) redirect("/prestador");
 
   const db = createServerClient();
-  const [dashboard, pending] = await Promise.all([providerDashboard(db, provider.id), pendingRequests(db, provider.id)]);
+  const [dashboard, accepted, pending] = await Promise.all([
+    providerDashboard(db, provider.id),
+    acceptedRequests(db, provider.id),
+    pendingRequests(db, provider.id),
+  ]);
   if (!dashboard) redirect("/prestador");
 
   return (
@@ -45,6 +49,26 @@ export default async function ProviderPanel() {
         <Stat value={dashboard.recommendationCount} label="recomendações" />
         <Stat value={dashboard.servicesCount} label="serviços no app" />
       </div>
+
+      {accepted.length > 0 && (
+        <section aria-labelledby="accepted-title" className="flex flex-col gap-2">
+          <h2 id="accepted-title" className="text-sm font-semibold">
+            Esperando o cliente confirmar
+          </h2>
+          <ul className="flex flex-col gap-3">
+            {accepted.map((request) => (
+              <li key={request.providerToken} className="flex flex-col gap-3 rounded-card border border-borda bg-superficie p-4">
+                <span className="min-w-0 font-bold [overflow-wrap:anywhere]">
+                  <bdi>{request.clientName}</bdi> · {request.category}
+                </span>
+                <Button variant="outline" href={`/s/${request.providerToken}`}>
+                  Reenviar link
+                </Button>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <section className="flex flex-col gap-2">
         <h2 className="text-sm font-semibold">Aguardando sua resposta</h2>

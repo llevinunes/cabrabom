@@ -45,6 +45,18 @@ describe("readSearchParams", () => {
     expect(readSearchParams({ ...complete, detalhes: undefined })).toBeNull();
   });
 
+  test("rounds the client's coordinates to about 100 m", () => {
+    const params = readSearchParams({ ...complete, lat: "-7.2307123456", lng: "-35.8811987654" })!;
+    expect(params.lat).toBe(-7.231);
+    expect(params.lng).toBe(-35.881);
+    expect(toQuery(params)).toContain("lat=-7.231&lng=-35.881");
+  });
+
+  test("rejects texts longer than the form allows", () => {
+    expect(readSearchParams({ ...complete, nome: "x".repeat(61) })).toBeNull();
+    expect(readSearchParams({ ...complete, detalhes: "x".repeat(501) })).toBeNull();
+  });
+
   test("toQuery round-trips", () => {
     const params = readSearchParams(complete)!;
     expect(readSearchParams(Object.fromEntries(new URLSearchParams(toQuery(params))))).toEqual(params);

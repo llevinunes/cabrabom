@@ -1,9 +1,10 @@
 import { z } from "zod";
 import { normalizeRadius } from "./params";
 
-const schema = z.object({
+/** Shared by the form and the URL (lib/search/params.ts): these texts end up in the WhatsApp message. */
+export const searchTextSchema = z.object({
   name: z.string().trim().min(1, "Informe seu nome").max(60, "Use até 60 caracteres"),
-  category: z.string().trim().min(1, "Escolha uma categoria"),
+  category: z.string().trim().min(1, "Escolha uma categoria").max(60),
   details: z.string().trim().min(1, "Descreva o serviço").max(500, "Use até 500 caracteres"),
 });
 
@@ -14,7 +15,7 @@ export type SearchFormErrors = Partial<Record<"name" | "category" | "details" | 
 export function parseSearchForm(
   form: FormData,
 ): { ok: true; data: SearchFormData } | { ok: false; errors: SearchFormErrors } {
-  const result = schema.safeParse({
+  const result = searchTextSchema.safeParse({
     name: form.get("name") ?? "",
     category: form.get("category") ?? "",
     details: form.get("details") ?? "",

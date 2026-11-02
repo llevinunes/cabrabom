@@ -1,3 +1,5 @@
+import { searchTextSchema } from "./form";
+
 export const DEFAULT_RADIUS_KM = 10;
 export const MAX_RADIUS_KM = 100;
 
@@ -25,13 +27,23 @@ export function normalizeRadius(value: Raw): number {
 
 /** URL parameters are in Portuguese, like the routes: nome, categoria, detalhes, lat, lng, raio. */
 export function readSearchParams(params: Record<string, Raw>): SearchParams | null {
-  const name = first(params.nome)?.trim();
-  const category = first(params.categoria)?.trim();
-  const details = first(params.detalhes)?.trim();
+  const texts = searchTextSchema.safeParse({
+    name: first(params.nome) ?? "",
+    category: first(params.categoria) ?? "",
+    details: first(params.detalhes) ?? "",
+  });
   const lat = toCoordinate(first(params.lat), 90);
   const lng = toCoordinate(first(params.lng), 180);
-  if (!name || !category || !details || lat === null || lng === null) return null;
-  return { name, category, details, lat, lng, radiusKm: normalizeRadius(params.raio) };
+  if (!texts.success || lat === null || lng === null) return null;
+  return { ...texts.data, lat, lng, radiusKm: normalizeRadius(params.raio) };
+}
+
+/**
+ * The client's position travels in the URL (logs, history), so it is kept to
+ * 3 decimal places (~110 m). Distances are shown to 0.1 km anyway.
+ */
+export function roundCoordinate(value: number): number {
+  return Math.round(value * 1000) / 1000;
 }
 
 export function toQuery(params: SearchParams): string {
@@ -39,8 +51,8 @@ export function toQuery(params: SearchParams): string {
     nome: params.name,
     categoria: params.category,
     detalhes: params.details,
-    lat: String(params.lat),
-    lng: String(params.lng),
+    lat: String(roundCoordinate(params.lat)),
+    lng: String(roundCoordinate(params.lng)),
     raio: String(params.radiusKm),
   }).toString();
 }
@@ -48,5 +60,5 @@ export function toQuery(params: SearchParams): string {
 function toCoordinate(value: string | undefined, limit: number): number | null {
   if (!value?.trim()) return null;
   const number = Number(value);
-  return Number.isFinite(number) && Math.abs(number) <= limit ? number : null;
+  return Number.isFinite(number) && Math.abs(number) <= limit ? roundCoordinate(number) : null;
 }

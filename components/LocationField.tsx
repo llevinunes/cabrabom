@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Field, FieldError } from "@/components/ui/Field";
 import { Icon } from "@/components/ui/Icon";
 
@@ -26,23 +26,50 @@ export function LocationField({
   defaultCep?: string;
 }) {
   const [state, setState] = useState<State>(defaultCep ? { mode: "cep" } : { mode: "idle" });
+  const container = useRef<HTMLFieldSetElement>(null);
+  const switchedByUser = useRef(false);
+
+  // The control that was clicked disappears when switching modes; keep focus inside the field.
+  useEffect(() => {
+    if (!switchedByUser.current) return;
+    switchedByUser.current = false;
+    const target = state.mode === "cep" ? "#location_cep" : "button";
+    container.current?.querySelector<HTMLElement>(target)?.focus();
+  }, [state.mode]);
+
+  function switchTo(next: State) {
+    switchedByUser.current = true;
+    setState(next);
+  }
+
+  const announcement =
+    state.mode === "locating"
+      ? "Buscando sua localização…"
+      : state.mode === "gps"
+        ? "Localização definida."
+        : state.mode === "cep" && state.reason
+          ? state.reason
+          : "";
 
   function useGps() {
     if (!("geolocation" in navigator)) {
-      setState({ mode: "cep", reason: "Seu navegador não informa a localização. Informe o CEP." });
+      switchTo({ mode: "cep", reason: "Seu navegador não informa a localização. Informe o CEP." });
       return;
     }
-    setState({ mode: "locating" });
+    switchTo({ mode: "locating" });
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => setState({ mode: "gps", lat: coords.latitude, lng: coords.longitude }),
-      () => setState({ mode: "cep", reason: "Não conseguimos sua localização. Informe o CEP." }),
+      () => switchTo({ mode: "cep", reason: "Não conseguimos sua localização. Informe o CEP." }),
       { enableHighAccuracy: false, timeout: 15_000, maximumAge: 300_000 },
     );
   }
 
   return (
-    <fieldset className="flex flex-col gap-2">
+    <fieldset ref={container} className="flex flex-col gap-2">
       <legend className="mb-2 text-sm font-semibold">{label}</legend>
+      <p aria-live="polite" className="sr-only">
+        {announcement}
+      </p>
 
       {state.mode === "cep" ? (
         <>
@@ -92,7 +119,7 @@ export function LocationField({
           {state.mode !== "gps" && (
             <button
               type="button"
-              onClick={() => setState({ mode: "cep" })}
+              onClick={() => switchTo({ mode: "cep" })}
               className="self-start text-sm font-semibold text-laranja-texto underline"
             >
               Informar o CEP

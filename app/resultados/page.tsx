@@ -82,7 +82,7 @@ export default async function Results({ searchParams }: PageProps<"/resultados">
             <li key={provider.id}>
               <ProviderCard
                 provider={provider}
-                title={<Link href={`/p/${provider.id}?${profileQuery}`}>{provider.name}</Link>}
+                href={`/p/${provider.id}?${profileQuery}`}
                 chatAction={<ChatButton providerId={provider.id} search={search} offersCategory />}
               />
             </li>

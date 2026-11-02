@@ -68,6 +68,24 @@ test("the CEP field formats as it is typed and stops at 8 digits", async ({ page
   await expect(cep).toHaveValue("58400");
 });
 
+
+test("tapping anywhere on a provider card opens the profile, except the WhatsApp button", async ({ page }) => {
+  const results = "/resultados?nome=Maria&categoria=eletricista&detalhes=x&lat=-7.2307&lng=-35.8811&raio=10";
+  await page.goto(results);
+  // A real tap at a spot of the card: whatever is on top there receives it.
+  const tapOn = async (text: string) => {
+    const box = (await page.getByRole("article").filter({ hasText: "João Silva" }).getByText(text).boundingBox())!;
+    await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  };
+
+  await tapOn("Encanador");
+  await expect(page).toHaveURL(/\/p\/00000000-0000-4000-8000-000000000001\?/);
+
+  await page.goto(results);
+  await tapOn("JS"); // the avatar
+  await expect(page).toHaveURL(/\/p\/00000000-0000-4000-8000-000000000001\?/);
+});
+
 test("Voltar from the results brings the search back to the form", async ({ page }) => {
   await page.goto("/resultados?nome=Maria&categoria=encanador&detalhes=Pia%20entupida&lat=-7.231&lng=-35.881&raio=25");
   await page.getByRole("link", { name: "Voltar" }).click();

@@ -8,10 +8,10 @@ export function StatusSwitch({ busy }: { busy: boolean }) {
       <input type="hidden" name="busy" value={String(free)} />
       <div className="flex flex-col gap-1">
         <span className="text-sm text-secundario">Seu status</span>
-        <span id="status-label" className="text-lg leading-tight font-extrabold">
+        <span id="status-text" className="text-lg leading-tight font-extrabold">
           {free ? "Livre para novos serviços" : "Ocupado no momento"}
         </span>
-        <span className="text-[13px] text-secundario">
+        <span id="status-hint" className="text-[13px] text-secundario">
           Quando um serviço começa, você fica ocupado automaticamente.
         </span>
       </div>
@@ -19,7 +19,9 @@ export function StatusSwitch({ busy }: { busy: boolean }) {
         type="submit"
         role="switch"
         aria-checked={free}
-        aria-labelledby="status-label"
+        // A stable name; aria-checked says whether it is on (otherwise "Ocupado, off" reads as free).
+        aria-label="Livre para novos serviços"
+        aria-describedby="status-hint"
         className={`relative mt-1 h-8 w-14 shrink-0 rounded-full transition-colors ${free ? "bg-livre-texto" : "bg-borda"}`}
       >
         <span

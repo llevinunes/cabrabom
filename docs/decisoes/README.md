@@ -33,3 +33,4 @@ Para registrar uma decisão nova, copie `0000-modelo.md`, use o próximo número
 | [0025](0025-especificacao-e-telas-de-referencia-fora-do-repositorio.md) | Especificação e telas de referência fora do repositório | Aceita | Usuário |
 | [0026](0026-testes-com-vitest-e-playwright.md) | Testes com Vitest e Playwright | Aceita | IA |
 | [0027](0027-next-js-16-sem-cache-components.md) | Next.js 16 sem Cache Components | Aceita | IA |
+| [0028](0028-codigo-em-ingles-interface-em-portugues.md) | Código em inglês, interface em português | Aceita | Usuário |

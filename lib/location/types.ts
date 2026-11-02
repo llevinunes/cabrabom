@@ -4,4 +4,4 @@ export type Place = { lat: number; lng: number; neighborhood: string | null; cit
 /** What a form sends: the browser's GPS position or a CEP typed by the person. */
 export type LocationInput = { kind: "gps"; lat: number; lng: number } | { kind: "cep"; cep: string };
 
-export const USER_AGENT = "CabraBom/0.3 (+https://github.com/llevinunes/cabrabom)";
+export const USER_AGENT = "CabraBom (+https://github.com/llevinunes/cabrabom)";

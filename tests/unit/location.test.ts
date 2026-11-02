@@ -74,6 +74,27 @@ describe("lookupCep", () => {
   });
 });
 
+describe("lookupCep limits", () => {
+  test("gives up on a slow service instead of waiting forever", async () => {
+    const signals: (AbortSignal | null | undefined)[] = [];
+    const fetcher = (async (_url: string, init?: RequestInit) => {
+      signals.push(init?.signal);
+      return new Response("{}", { status: 404 });
+    }) as typeof fetch;
+    await lookupCep("58400000", fetcher);
+    expect(signals.length).toBeGreaterThan(0);
+    expect(signals.every((signal) => signal instanceof AbortSignal)).toBe(true);
+  });
+
+  test("ignores Nominatim answers without numbers", async () => {
+    const { fetcher } = fakeFetch({
+      [BRASIL_API]: { body: brasilApiBody({}) },
+      [NOMINATIM_SEARCH]: { body: [{ lat: "", lon: "x" }] },
+    });
+    expect(await lookupCep("58400000", fetcher)).toBeNull();
+  });
+});
+
 describe("placeFromCoordinates", () => {
   test("reads neighborhood and city from Nominatim", async () => {
     const { fetcher } = fakeFetch({
@@ -99,6 +120,11 @@ describe("placeFromCoordinates", () => {
 });
 
 describe("resolveLocation", () => {
+  test("rejects a CEP that resolves outside Brazil", async () => {
+    const { fetcher } = fakeFetch({ [BRASIL_API]: { body: brasilApiBody({ latitude: "40.7", longitude: "-74.0" }) } });
+    expect(await resolveLocation({ kind: "cep", cep: "58400000" }, fetcher)).toBeNull();
+  });
+
   test("rejects GPS points outside Brazil, such as swapped latitude and longitude", async () => {
     const { fetcher, calls } = fakeFetch({});
     expect(await resolveLocation({ kind: "gps", lat: -35.88, lng: -7.23 }, fetcher)).toBeNull();

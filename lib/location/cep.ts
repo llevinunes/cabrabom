@@ -26,13 +26,20 @@ export async function lookupCep(cep: string, fetcher: typeof fetch = fetch): Pro
     `https://nominatim.openstreetmap.org/search?postalcode=${formatted}&country=br&format=jsonv2&limit=1`,
     fetcher,
   );
-  if (!found?.[0]) return null;
-  return { lat: Number(found[0].lat), lng: Number(found[0].lon), neighborhood, city };
+  const foundLat = parseFloat(found?.[0]?.lat ?? "");
+  const foundLng = parseFloat(found?.[0]?.lon ?? "");
+  if (!Number.isFinite(foundLat) || !Number.isFinite(foundLng)) return null;
+  return { lat: foundLat, lng: foundLng, neighborhood, city };
 }
+
+const TIMEOUT_MS = 4000;
 
 export async function getJson<T>(url: string, fetcher: typeof fetch): Promise<T | null> {
   try {
-    const response = await fetcher(url, { headers: { "User-Agent": USER_AGENT, Accept: "application/json" } });
+    const response = await fetcher(url, {
+      headers: { "User-Agent": USER_AGENT, Accept: "application/json" },
+      signal: AbortSignal.timeout(TIMEOUT_MS),
+    });
     return response.ok ? ((await response.json()) as T) : null;
   } catch {
     return null;

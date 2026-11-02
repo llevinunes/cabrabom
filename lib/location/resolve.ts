@@ -8,7 +8,10 @@ export function isInBrazil(lat: number, lng: number): boolean {
 }
 
 export async function resolveLocation(input: LocationInput, fetcher: typeof fetch = fetch): Promise<Place | null> {
-  if (input.kind === "cep") return lookupCep(input.cep, fetcher);
+  if (input.kind === "cep") {
+    const place = await lookupCep(input.cep, fetcher);
+    return place && isInBrazil(place.lat, place.lng) ? place : null;
+  }
   if (!isInBrazil(input.lat, input.lng)) return null;
   return placeFromCoordinates(input.lat, input.lng, fetcher);
 }

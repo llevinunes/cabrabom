@@ -5,6 +5,8 @@ export type Dashboard = {
   name: string;
   busy: boolean;
   neighborhood: string | null;
+  city: string | null;
+  state: string | null;
   recommendationCount: number;
   servicesCount: number;
 };
@@ -12,7 +14,7 @@ export type Dashboard = {
 /** What /painel shows at the top (screen 10). */
 export async function providerDashboard(db: Db, providerId: string): Promise<Dashboard | null> {
   const [provider, recommendations, services] = await Promise.all([
-    db.from("providers").select("name, busy, neighborhood").eq("id", providerId).maybeSingle(),
+    db.from("providers").select("name, busy, neighborhood, city, state").eq("id", providerId).maybeSingle(),
     db.from("recommendations").select("id", { count: "exact", head: true }).eq("provider_id", providerId).eq("visible", true),
     db
       .from("service_requests")
@@ -45,6 +47,7 @@ export async function updateProviderLocation(db: Db, providerId: string, place: 
     p_lng: place.lng,
     p_neighborhood: place.neighborhood?.slice(0, 80) ?? undefined,
     p_city: place.city?.slice(0, 80) ?? undefined,
+    p_state: place.state ?? undefined,
   });
   if (error) throw error;
 }

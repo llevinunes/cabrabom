@@ -43,9 +43,10 @@ test("pendingSignupSchema validates what comes back from the cookie", () => {
     name: "João",
     categoryIds: [1],
     consent: true,
-    place: { lat: -7.2, lng: -35.9, neighborhood: "Centro", city: null },
+    place: { lat: -7.2, lng: -35.9, neighborhood: "Centro", city: null, state: "PB" },
   };
   expect(pendingSignupSchema.safeParse({ ...valid, consent: false }).success).toBe(false);
+  expect(pendingSignupSchema.safeParse({ ...valid, place: { ...valid.place, state: "Ceará" } }).success).toBe(false);
   expect(pendingSignupSchema.safeParse({ ...valid, place: { ...valid.place, neighborhood: "x".repeat(81) } }).success).toBe(
     false,
   );

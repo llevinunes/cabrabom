@@ -55,6 +55,7 @@ export async function submitSignup(_previous: SignupState, form: FormData): Prom
       ...place,
       neighborhood: place.neighborhood?.slice(0, 80) ?? null,
       city: place.city?.slice(0, 80) ?? null,
+      state: place.state,
     },
   });
   if (!pending.success) {

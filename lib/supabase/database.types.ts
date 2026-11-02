@@ -65,14 +65,14 @@ isOneToOne: false
                   ]
                 },"providers": {
                   Row: {
-                    "bio": string | null,"busy": boolean,"busy_reminder_sent_at": string | null,"busy_updated_at": string,"city": string | null,"created_at": string,"hidden": boolean,"id": string,"location": unknown,"name": string,"neighborhood": string | null,"whatsapp": string,"whatsapp_consent_at": string,"years_experience": number | null
+                    "bio": string | null,"busy": boolean,"busy_reminder_sent_at": string | null,"busy_updated_at": string,"city": string | null,"created_at": string,"hidden": boolean,"id": string,"location": unknown,"name": string,"neighborhood": string | null,"state": string | null,"whatsapp": string,"whatsapp_consent_at": string,"years_experience": number | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "bio"?: string | null,"busy"?: boolean,"busy_reminder_sent_at"?: string | null,"busy_updated_at"?: string,"city"?: string | null,"created_at"?: string,"hidden"?: boolean,"id"?: string,"location": unknown,"name": string,"neighborhood"?: string | null,"whatsapp": string,"whatsapp_consent_at": string,"years_experience"?: number | null
+                    "bio"?: string | null,"busy"?: boolean,"busy_reminder_sent_at"?: string | null,"busy_updated_at"?: string,"city"?: string | null,"created_at"?: string,"hidden"?: boolean,"id"?: string,"location": unknown,"name": string,"neighborhood"?: string | null,"state"?: string | null,"whatsapp": string,"whatsapp_consent_at": string,"years_experience"?: number | null
                   }
                   Update: {
-                    "bio"?: string | null,"busy"?: boolean,"busy_reminder_sent_at"?: string | null,"busy_updated_at"?: string,"city"?: string | null,"created_at"?: string,"hidden"?: boolean,"id"?: string,"location"?: unknown,"name"?: string,"neighborhood"?: string | null,"whatsapp"?: string,"whatsapp_consent_at"?: string,"years_experience"?: number | null
+                    "bio"?: string | null,"busy"?: boolean,"busy_reminder_sent_at"?: string | null,"busy_updated_at"?: string,"city"?: string | null,"created_at"?: string,"hidden"?: boolean,"id"?: string,"location"?: unknown,"name"?: string,"neighborhood"?: string | null,"state"?: string | null,"whatsapp"?: string,"whatsapp_consent_at"?: string,"years_experience"?: number | null
                   }
                   Relationships: [
                     
@@ -184,18 +184,18 @@ isOneToOne: false
 { Args: { "p_lat": number,"p_lng": number }; Returns: unknown
                            },
 "create_provider":
-{ Args: { "p_category_ids"?: (number)[],"p_city"?: string,"p_lat": number,"p_lng": number,"p_name": string,"p_neighborhood"?: string,"p_whatsapp": string }; Returns: string
+{ Args: { "p_category_ids"?: (number)[],"p_city"?: string,"p_lat": number,"p_lng": number,"p_name": string,"p_neighborhood"?: string,"p_state"?: string,"p_whatsapp": string }; Returns: string
                            },
 "distance_to_provider":
 { Args: { "p_lat": number,"p_lng": number,"p_provider_id": string }; Returns: number
                            },
 "search_providers":
 { Args: { "p_category_id": number,"p_lat": number,"p_lng": number,"p_radius_km": number }; Returns: {
-              "busy": boolean,"categories": (string)[],"distance_km": number,"id": string,"name": string,"neighborhood": string,"recommendation_count": number
+              "busy": boolean,"categories": (string)[],"city": string,"distance_km": number,"id": string,"name": string,"neighborhood": string,"recommendation_count": number,"state": string
             }[]
                            },
 "set_provider_location":
-{ Args: { "p_city"?: string,"p_lat": number,"p_lng": number,"p_neighborhood"?: string,"p_provider_id": string }; Returns: undefined
+{ Args: { "p_city"?: string,"p_lat": number,"p_lng": number,"p_neighborhood"?: string,"p_provider_id": string,"p_state"?: string }; Returns: undefined
                            }
           }
           Enums: {

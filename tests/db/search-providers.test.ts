@@ -15,6 +15,8 @@ test("searchProviders maps the RPC rows to camelCase numbers", async () => {
     id: "00000000-0000-4000-8000-000000000001",
     name: "João Silva",
     neighborhood: "Centro",
+    city: "Campina Grande",
+    state: "PB",
     busy: false,
     distanceKm: 1.2,
     categories: ["Eletricista", "Encanador"],

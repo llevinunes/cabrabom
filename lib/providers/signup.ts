@@ -46,6 +46,7 @@ export const pendingSignupSchema = z.object({
       lng: z.number(),
       neighborhood: z.string().max(80).nullable(),
       city: z.string().max(80).nullable(),
+      state: z.string().regex(/^[A-Z]{2}$/).nullable(),
     })
     .refine((place) => isInBrazil(place.lat, place.lng)),
 });

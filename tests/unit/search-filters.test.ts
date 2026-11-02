@@ -5,6 +5,8 @@ const result = (name: string, busy: boolean, recommendationCount: number) => ({
   id: name,
   name,
   neighborhood: null,
+  city: null,
+  state: null,
   busy,
   distanceKm: 1,
   categories: [],

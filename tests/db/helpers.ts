@@ -62,6 +62,7 @@ export async function cleanTestData(db: TestDb) {
     p_lng: -35.8811,
     p_neighborhood: "Centro",
     p_city: "Campina Grande",
+    p_state: "PB",
   });
   if (error) throw error;
 }

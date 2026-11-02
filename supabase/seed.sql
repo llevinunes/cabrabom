@@ -12,17 +12,17 @@ insert into public.categories (name, slug) values
   ('Montador de móveis', 'montador-de-moveis');
 
 insert into public.providers
-  (id, name, whatsapp, location, neighborhood, city, busy, years_experience, whatsapp_consent_at)
+  (id, name, whatsapp, location, neighborhood, city, state, busy, years_experience, whatsapp_consent_at)
 values
   -- ~1.2 km north of the centre
   ('00000000-0000-4000-8000-000000000001', 'João Silva', '5583900000001',
-   public.coarse_point(-7.2199, -35.8811), 'Centro', 'Campina Grande', false, 8, now()),
+   public.coarse_point(-7.2199, -35.8811), 'Centro', 'Campina Grande', 'PB', false, 8, now()),
   -- ~3.4 km east
   ('00000000-0000-4000-8000-000000000002', 'Antônio Ferreira', '5583900000002',
-   public.coarse_point(-7.2307, -35.8503), 'Alto da Serra', 'Campina Grande', false, null, now()),
+   public.coarse_point(-7.2307, -35.8503), 'Alto da Serra', 'Campina Grande', 'PB', false, null, now()),
   -- ~6.8 km south, busy
   ('00000000-0000-4000-8000-000000000003', 'Raimundo Costa', '5583900000003',
-   public.coarse_point(-7.2922, -35.8811), 'Pedra Branca', 'Campina Grande', true, null, now());
+   public.coarse_point(-7.2922, -35.8811), 'Pedra Branca', 'Campina Grande', 'PB', true, null, now());
 
 insert into public.provider_categories (provider_id, category_id)
 select p.id, c.id

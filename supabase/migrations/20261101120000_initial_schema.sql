@@ -106,7 +106,17 @@ create table public.rate_limit_hits (
 create index rate_limit_hits_key_idx on public.rate_limit_hits (key, created_at);
 
 -- The browser never talks to the database (ADR 0030).
--- RLS on, no policies: only the service_role key (server side) can read or write.
+-- 1. Take away the API roles' privileges, now and for every future table,
+--    sequence and function, so a table that forgets RLS is still closed.
+revoke all on all tables in schema public from anon, authenticated;
+revoke all on all sequences in schema public from anon, authenticated;
+revoke all on all functions in schema public from anon, authenticated;
+alter default privileges in schema public revoke all on tables from anon, authenticated;
+alter default privileges in schema public revoke all on sequences from anon, authenticated;
+alter default privileges in schema public revoke all on functions from anon, authenticated;
+alter default privileges in schema public revoke execute on functions from public;
+
+-- 2. RLS on, no policies: only the service_role key (server side) can read or write.
 alter table public.categories enable row level security;
 alter table public.providers enable row level security;
 alter table public.provider_categories enable row level security;

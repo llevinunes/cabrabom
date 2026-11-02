@@ -12,7 +12,7 @@ import { getCurrentProvider } from "@/server/current-provider";
 /** Free/busy switch on the panel. The provider comes from the session, never from the form. */
 export async function toggleBusy(form: FormData): Promise<void> {
   const provider = await getCurrentProvider();
-  if (!provider) redirect("/entrar?voltar=/painel");
+  if (!provider) redirect("/prestador");
   await setBusy(createServerClient(), provider.id, form.get("busy") === "true");
   revalidatePath("/painel");
 }
@@ -21,7 +21,7 @@ export type LocationState = { error: string } | null;
 
 export async function saveLocation(_previous: LocationState, form: FormData): Promise<LocationState> {
   const provider = await getCurrentProvider();
-  if (!provider) redirect("/entrar?voltar=/painel/localizacao");
+  if (!provider) redirect("/prestador");
   const input = readLocationInput(form);
   if (!input) return { error: "Informe onde você atende" };
 

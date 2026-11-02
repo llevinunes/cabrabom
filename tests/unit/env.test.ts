@@ -1,0 +1,34 @@
+import { describe, expect, test } from "vitest";
+import { parseEnv } from "@/lib/env";
+
+const valid = {
+  SUPABASE_URL: "http://127.0.0.1:54321",
+  SUPABASE_SERVICE_ROLE_KEY: "secret",
+  WHATSAPP_CABRABOM_NUMBER: "5583900000000",
+};
+
+describe("parseEnv", () => {
+  test("defaults APP_URL to localhost", () => {
+    expect(parseEnv(valid).APP_URL).toBe("http://localhost:3000");
+  });
+
+  test("strips a trailing slash from APP_URL", () => {
+    expect(parseEnv({ ...valid, APP_URL: "https://cabrabom.app/" }).APP_URL).toBe("https://cabrabom.app");
+  });
+
+  test("treats empty optional values as missing", () => {
+    const env = parseEnv({ ...valid, META_APP_SECRET: "", WHATSAPP_VERIFY_TOKEN: "" });
+    expect(env.META_APP_SECRET).toBeUndefined();
+    expect(env.WHATSAPP_VERIFY_TOKEN).toBeUndefined();
+  });
+
+  test("names the missing variable", () => {
+    expect(() => parseEnv({ ...valid, SUPABASE_SERVICE_ROLE_KEY: undefined })).toThrow(/SUPABASE_SERVICE_ROLE_KEY/);
+  });
+
+  test("requires the CabraBom number to be digits only", () => {
+    expect(() => parseEnv({ ...valid, WHATSAPP_CABRABOM_NUMBER: "+55 83 9000-0000" })).toThrow(
+      /WHATSAPP_CABRABOM_NUMBER/,
+    );
+  });
+});

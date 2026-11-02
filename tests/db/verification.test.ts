@@ -1,5 +1,10 @@
 import { afterEach, describe, expect, test } from "vitest";
-import { confirmCode, consumeVerification, startVerification } from "@/lib/auth/verification";
+import {
+  confirmCode,
+  consumeVerification,
+  findPendingVerification,
+  startVerification,
+} from "@/lib/auth/verification";
 import { cleanTestData, testClient } from "./helpers";
 
 const db = testClient();
@@ -58,5 +63,29 @@ describe("consumeVerification", () => {
 
   test("returns nothing for an id that is not a uuid", async () => {
     expect(await consumeVerification(db, "not-a-uuid")).toBeNull();
+  });
+});
+
+describe("findPendingVerification", () => {
+  test("returns the code while it is still waiting", async () => {
+    const started = await startVerification(db);
+    expect(await findPendingVerification(db, started.id)).toEqual(started);
+  });
+
+  test("returns nothing once it was used or expired", async () => {
+    const used = await startVerification(db);
+    await confirmCode(db, used.code, PHONE);
+    await consumeVerification(db, used.id);
+    expect(await findPendingVerification(db, used.id)).toBeNull();
+
+    const old = await startVerification(db);
+    await db.from("verifications").update({ expires_at: new Date(Date.now() - 1000).toISOString() }).eq("id", old.id);
+    expect(await findPendingVerification(db, old.id)).toBeNull();
+  });
+
+  test("keeps returning a confirmed code until the browser consumes it", async () => {
+    const started = await startVerification(db);
+    await confirmCode(db, started.code, PHONE);
+    expect(await findPendingVerification(db, started.id)).toEqual(started);
   });
 });

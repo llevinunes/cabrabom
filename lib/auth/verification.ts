@@ -56,3 +56,17 @@ export async function consumeVerification(db: Db, id: string): Promise<{ phone: 
   if (error) throw error;
   return data?.phone ? { phone: data.phone } : null;
 }
+
+/** A code that can still be sent (not used, not expired), so the page can show it again. */
+export async function findPendingVerification(db: Db, id: string): Promise<Verification | null> {
+  if (!isUuid(id)) return null;
+  const { data, error } = await db
+    .from("verifications")
+    .select("id, code, expires_at")
+    .eq("id", id)
+    .is("used_at", null)
+    .gt("expires_at", new Date().toISOString())
+    .maybeSingle();
+  if (error) throw error;
+  return data ? { id: data.id, code: data.code, expiresAt: new Date(data.expires_at) } : null;
+}

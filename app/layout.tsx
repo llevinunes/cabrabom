@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { archivo } from "./fontes";
+import { archivo } from "./fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {

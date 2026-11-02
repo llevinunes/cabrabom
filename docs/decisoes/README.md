@@ -34,3 +34,5 @@ Para registrar uma decisão nova, copie `0000-modelo.md`, use o próximo número
 | [0026](0026-testes-com-vitest-e-playwright.md) | Testes com Vitest e Playwright | Aceita | IA |
 | [0027](0027-next-js-16-sem-cache-components.md) | Next.js 16 sem Cache Components | Aceita | IA |
 | [0028](0028-codigo-em-ingles-interface-em-portugues.md) | Código em inglês, interface em português | Aceita | Usuário |
+| [0029](0029-supabase-local-via-cli-no-desenvolvimento.md) | Supabase local via CLI no desenvolvimento | Aceita | Usuário e IA |
+| [0030](0030-acesso-ao-banco-so-pelo-servidor-via-rpc.md) | Acesso ao banco só pelo servidor, via RPC | Aceita | IA |

@@ -1,6 +1,7 @@
 # Material de referência local (não versionado)
 /referencias/
 /docs/superpowers/
+/.superpowers/
 
 # Sistema
 .DS_Store

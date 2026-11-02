@@ -7,12 +7,20 @@ import { Button } from "@/components/ui/Button";
 import { ChipOption } from "@/components/ui/ChipOption";
 import { Field, FieldError } from "@/components/ui/Field";
 import type { Category } from "@/lib/categories";
+import { normalizeRadius, type SearchDefaults } from "@/lib/search/params";
 import { search } from "./search-actions";
 
-export function SearchForm({ categories }: { categories: Category[] }) {
+export function SearchForm({ categories, defaults }: { categories: Category[]; defaults: SearchDefaults }) {
   const [state, action, pending] = useActionState(search, null);
   const errors = state?.errors ?? {};
-  const values = state?.values;
+  // After a submit, show what was sent; before that, what came in the URL (e.g. "Voltar").
+  const values = state?.values ?? {
+    name: defaults.name,
+    category: defaults.category,
+    details: defaults.details,
+    radius: String(defaults.radiusKm),
+    cep: "",
+  };
 
   return (
     <form action={action} className="flex flex-col gap-5" noValidate>
@@ -22,7 +30,7 @@ export function SearchForm({ categories }: { categories: Category[] }) {
         label="Seu nome"
         placeholder="Ex.: Maria"
         autoComplete="given-name"
-        defaultValue={values?.name}
+        defaultValue={values.name}
         error={errors.name}
       />
 
@@ -35,7 +43,7 @@ export function SearchForm({ categories }: { categories: Category[] }) {
               type="radio"
               name="category"
               value={category.slug}
-              defaultChecked={values?.category === category.slug}
+              defaultChecked={values.category === category.slug}
             >
               {category.name}
             </ChipOption>
@@ -52,13 +60,18 @@ export function SearchForm({ categories }: { categories: Category[] }) {
         rows={3}
         maxLength={500}
         placeholder="Descreva o que precisa ser feito. Ex.: trocar a fiação da cozinha e instalar 3 tomadas."
-        defaultValue={values?.details}
+        defaultValue={values.details}
         error={errors.details}
       />
 
-      <LocationField label="Onde é o serviço?" error={errors.location} defaultCep={values?.cep || undefined} />
+      <LocationField
+        label="Onde é o serviço?"
+        error={errors.location}
+        defaultCep={values.cep || undefined}
+        defaultPosition={state ? null : defaults.position}
+      />
 
-      <RadiusControl defaultValue={values?.radius ? Number(values.radius) : undefined} />
+      <RadiusControl defaultValue={normalizeRadius(values.radius)} />
 
       <Button type="submit" variant="primary" disabled={pending}>
         Buscar prestadores

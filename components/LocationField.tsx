@@ -20,13 +20,18 @@ export function LocationField({
   hint = "ou informe o CEP",
   error,
   defaultCep,
+  defaultPosition,
 }: {
   label: string;
   hint?: string;
   error?: string;
   defaultCep?: string;
+  /** A position already chosen (e.g. coming back from the results): starts as "Localização definida". */
+  defaultPosition?: { lat: number; lng: number } | null;
 }) {
-  const [state, setState] = useState<State>(defaultCep ? { mode: "cep" } : { mode: "idle" });
+  const [state, setState] = useState<State>(
+    defaultCep ? { mode: "cep" } : defaultPosition ? { mode: "gps", ...defaultPosition } : { mode: "idle" },
+  );
   const [cep, setCep] = useState(() => formatCep(defaultCep ?? ""));
   const container = useRef<HTMLFieldSetElement>(null);
   const switchedByUser = useRef(false);

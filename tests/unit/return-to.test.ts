@@ -16,3 +16,10 @@ test("falls back to / for anything that leaves the app", () => {
   expect(safeReturnTo(null)).toBe("/");
   expect(safeReturnTo(undefined)).toBe("/");
 });
+
+test("rejects control characters and backslashes anywhere", () => {
+  // browsers drop tabs/newlines while parsing, turning "/\t/evil.com" into "//evil.com"
+  expect(safeReturnTo("/\t/evil.com")).toBe("/");
+  expect(safeReturnTo("/\n/evil.com")).toBe("/");
+  expect(safeReturnTo("/painel\\..\\x")).toBe("/");
+});

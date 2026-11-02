@@ -6,7 +6,7 @@ import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { publicProfile } from "@/lib/providers/profile";
 import { readSearchParams, toQuery } from "@/lib/search/params";
 import { createServerClient } from "@/lib/supabase/server";
-import { formatKm } from "@/lib/text";
+import { formatKm, placeLabel } from "@/lib/text";
 
 function Stat({ value, label }: { value: string; label: string }) {
   return (
@@ -30,7 +30,7 @@ export default async function ProviderProfile({ params, searchParams }: PageProp
     const { data } = await db.rpc("distance_to_provider", { p_provider_id: id, p_lat: search.lat, p_lng: search.lng });
     distanceKm = data === null ? null : Number(data);
   }
-  const place = [profile.neighborhood, distanceKm !== null ? `${formatKm(distanceKm)} de você` : null]
+  const place = [placeLabel(profile), distanceKm !== null ? `${formatKm(distanceKm)} de você` : null]
     .filter(Boolean)
     .join(" · ");
 

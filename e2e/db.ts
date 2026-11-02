@@ -23,3 +23,19 @@ export async function createRequestForJoao(clientName: string, token: string, de
   });
   if (error) throw error;
 }
+
+/** A provider whose location only resolved to a city (no neighborhood). */
+export async function createCityOnlyProvider(name: string, whatsapp: string) {
+  const db = testDb();
+  const { data: category } = await db.from("categories").select("id").eq("slug", "pedreiro").single();
+  const { error } = await db.rpc("create_provider", {
+    p_name: name,
+    p_whatsapp: whatsapp,
+    p_lat: -4.3047,
+    p_lng: -38.9958,
+    p_city: "Mulungu",
+    p_state: "CE",
+    p_category_ids: [category!.id],
+  });
+  if (error) throw error;
+}

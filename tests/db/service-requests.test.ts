@@ -1,6 +1,8 @@
 import { afterEach, beforeAll, describe, expect, test } from "vitest";
 import { findOpenRequest, openServiceRequest, recentRequestCount } from "@/lib/service-requests/open";
-import { CITY_CENTRE, JOAO_ID, categoryId, cleanTestData, testClient } from "./helpers";
+import { acceptServiceRequest } from "@/lib/service-requests/lifecycle";
+import { requestByClientToken } from "@/lib/service-requests/queries";
+import { CITY_CENTRE, JOAO_ID, JOAO_WHATSAPP, categoryId, cleanTestData, testClient } from "./helpers";
 
 const db = testClient();
 let electrician: number;
@@ -88,4 +90,25 @@ test("a position far outside the service area does not break the request", async
   const { token } = await openServiceRequest(db, request({ lat: 35, lng: 139 }));
   const { data } = await db.from("service_requests").select("distance_km").eq("provider_token", token).single();
   expect(data!.distance_km).toBeNull();
+});
+
+describe("requestByClientToken", () => {
+  test("returns null for malformed or unknown tokens", async () => {
+    expect(await requestByClientToken(db, "'; drop table")).toBeNull();
+    expect(await requestByClientToken(db, "x".repeat(24))).toBeNull();
+  });
+
+  test("returns an accepted request with its provider", async () => {
+    const { token } = await openServiceRequest(db, request());
+    const clientToken = (await acceptServiceRequest(db, token, JOAO_WHATSAPP))!;
+    expect(await requestByClientToken(db, clientToken)).toMatchObject({
+      status: "accepted",
+      clientName: "Maria",
+      category: "Eletricista",
+      clientPhone: null,
+      providerId: JOAO_ID,
+      providerName: "João Silva",
+      providerWhatsapp: JOAO_WHATSAPP,
+    });
+  });
 });

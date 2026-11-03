@@ -6,8 +6,10 @@ import { readLocationInput } from "@/lib/location/form";
 import { resolveLocation } from "@/lib/location/resolve";
 import { setBusy, updateProviderLocation } from "@/lib/providers/panel";
 import { withinLimit } from "@/lib/rate-limit";
+import { cancelServiceRequest, completeServiceRequest } from "@/lib/service-requests/lifecycle";
 import { createServerClient } from "@/lib/supabase/server";
 import { getCurrentProvider } from "@/server/current-provider";
+import { getCurrentSession } from "@/server/session";
 
 /** Free/busy switch on the panel. The provider comes from the session, never from the form. */
 export async function toggleBusy(form: FormData): Promise<void> {
@@ -40,4 +42,19 @@ export async function saveLocation(_previous: LocationState, form: FormData): Pr
   }
   await updateProviderLocation(db, provider.id, place);
   redirect("/painel");
+}
+
+/** "Finalizar serviço" on the panel. The database checks the session phone is the provider's. */
+export async function finishService(form: FormData): Promise<void> {
+  const session = await getCurrentSession();
+  if (!session) redirect("/entrar?voltar=/painel");
+  await completeServiceRequest(createServerClient(), String(form.get("token") ?? ""), session.phone, "provider");
+  revalidatePath("/painel");
+}
+
+export async function cancelService(form: FormData): Promise<void> {
+  const session = await getCurrentSession();
+  if (!session) redirect("/entrar?voltar=/painel");
+  await cancelServiceRequest(createServerClient(), String(form.get("token") ?? ""), session.phone, "provider");
+  revalidatePath("/painel");
 }

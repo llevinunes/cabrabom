@@ -183,14 +183,53 @@ isOneToOne: false
 "assert_valid_coordinates":
 { Args: { "p_lat": number,"p_lng": number }; Returns: undefined
                            },
+"cancel_service_request":
+{ Args: { "p_by": string,"p_phone": string,"p_token": string }; Returns: string
+                           },
 "coarse_point":
 { Args: { "p_lat": number,"p_lng": number }; Returns: unknown
+                           },
+"complete_service_request":
+{ Args: { "p_by": string,"p_phone": string,"p_token": string }; Returns: string
+                           },
+"confirm_service_request":
+{ Args: { "p_client_token": string,"p_phone": string }; Returns: string
                            },
 "create_provider":
 { Args: { "p_category_ids"?: (number)[],"p_city"?: string,"p_lat": number,"p_lng": number,"p_name": string,"p_neighborhood"?: string,"p_state"?: string,"p_whatsapp": string }; Returns: string
                            },
 "distance_to_provider":
 { Args: { "p_lat": number,"p_lng": number,"p_provider_id": string }; Returns: number
+                           },
+"lock_request_for_party":
+{ Args: { "p_by": string,"p_phone": string,"p_token": string }; Returns: {
+              "accepted_at": string | null,
+"anonymous_client": string | null,
+"cancelled_at": string | null,
+"category_id": number,
+"client_confirmed_at": string | null,
+"client_name": string,
+"client_phone": string | null,
+"client_token": string | null,
+"completed_at": string | null,
+"completed_by": string | null,
+"created_at": string,
+"details": string,
+"distance_km": number | null,
+"expired_at": string | null,
+"id": string,
+"provider_id": string,
+"provider_token": string,
+"status": string
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "service_requests"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
+"release_provider_if_idle":
+{ Args: { "p_provider_id": string,"p_request_id": string }; Returns: undefined
                            },
 "search_providers":
 { Args: { "p_category_id": number,"p_lat": number,"p_lng": number,"p_radius_km": number }; Returns: {

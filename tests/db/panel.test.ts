@@ -1,8 +1,14 @@
 import { afterEach, describe, expect, test } from "vitest";
 import { providerDashboard, setBusy, updateProviderLocation } from "@/lib/providers/panel";
 import { openServiceRequest } from "@/lib/service-requests/open";
-import { acceptServiceRequest } from "@/lib/service-requests/lifecycle";
-import { acceptedRequests, pendingRequests, requestByToken } from "@/lib/service-requests/queries";
+import { acceptServiceRequest, completeServiceRequest, confirmServiceRequest } from "@/lib/service-requests/lifecycle";
+import {
+  acceptedRequests,
+  finishedAwaitingRecommendation,
+  inProgressRequests,
+  pendingRequests,
+  requestByToken,
+} from "@/lib/service-requests/queries";
 import { JOAO_ID, JOAO_WHATSAPP, categoryId, cleanTestData, testClient } from "./helpers";
 
 const db = testClient();
@@ -102,6 +108,41 @@ describe("acceptedRequests", () => {
     const clientToken = await acceptServiceRequest(db, accepted.token, JOAO_WHATSAPP);
     expect(await acceptedRequests(db, JOAO_ID)).toEqual([
       expect.objectContaining({ providerToken: accepted.token, clientToken, clientName: "Maria", category: "Eletricista" }),
+    ]);
+  });
+});
+
+describe("services on the panel", () => {
+  const CLIENT_PHONE = "5583988887777";
+
+  async function confirmed(anonymousClient: string, clientName: string) {
+    const { token } = await openRequest(anonymousClient, clientName);
+    const clientToken = (await acceptServiceRequest(db, token, JOAO_WHATSAPP))!;
+    await confirmServiceRequest(db, clientToken, CLIENT_PHONE);
+    return { providerToken: token, clientToken };
+  }
+
+  test("inProgressRequests lists only services in progress, with details", async () => {
+    const service = await confirmed("b1", "Maria");
+    await openRequest("b2", "Pedro");
+    expect(await inProgressRequests(db, JOAO_ID)).toEqual([
+      {
+        providerToken: service.providerToken,
+        clientName: "Maria",
+        category: "Eletricista",
+        details: "Trocar a fiação",
+        confirmedAt: expect.any(Date),
+      },
+    ]);
+  });
+
+  test("finishedAwaitingRecommendation lists services the provider finished", async () => {
+    const byProvider = await confirmed("b1", "Maria");
+    const byClient = await confirmed("b2", "Pedro");
+    await completeServiceRequest(db, byProvider.providerToken, JOAO_WHATSAPP, "provider");
+    await completeServiceRequest(db, byClient.clientToken, CLIENT_PHONE, "client");
+    expect(await finishedAwaitingRecommendation(db, JOAO_ID)).toEqual([
+      { clientToken: byProvider.clientToken, clientName: "Maria", completedAt: expect.any(Date) },
     ]);
   });
 });

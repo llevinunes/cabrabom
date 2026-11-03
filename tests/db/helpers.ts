@@ -48,6 +48,7 @@ async function must(query: PromiseLike<{ error: unknown }>) {
 
 /** Removes everything the tests create and puts the seed back as it was. */
 export async function cleanTestData(db: TestDb) {
+  await must(db.from("push_subscriptions").delete().not("id", "is", null));
   await must(db.from("recommendations").delete().not("id", "is", null));
   await must(db.from("service_requests").delete().not("id", "is", null));
   await must(db.from("verifications").delete().not("id", "is", null));

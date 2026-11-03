@@ -159,3 +159,17 @@ describe("cancelServiceRequest", () => {
     expect(await cancelServiceRequest(db, providerToken, JOAO_WHATSAPP, "provider")).toBe("unavailable");
   });
 });
+
+describe("concurrency", () => {
+  test("two services ending at the same time leave the provider free", async () => {
+    for (let round = 0; round < 8; round++) {
+      const a = await inProgressRequest();
+      const b = await inProgressRequest();
+      await Promise.all([
+        completeServiceRequest(db, a.clientToken, CLIENT, "client"),
+        completeServiceRequest(db, b.providerToken, JOAO_WHATSAPP, "provider"),
+      ]);
+      expect(await joaoBusy()).toBe(false);
+    }
+  });
+});

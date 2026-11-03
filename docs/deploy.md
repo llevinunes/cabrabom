@@ -29,10 +29,14 @@ O deploy de produção sai da branch `main`. Antes de começar, o `develop` prec
 
 ## 2. WhatsApp: número de teste da Meta
 
-1. Em <https://developers.facebook.com/apps>, crie um app do tipo **Business** e adicione o produto **WhatsApp**.
-2. Em **WhatsApp → API Setup**:
-   - anote o número de teste (campo "From"). Só os dígitos, com 55 e DDD, vão em `WHATSAPP_CABRABOM_NUMBER`;
-   - em "To", cadastre e verifique os telefones do grupo de teste (até **5**, somando prestadores e clientes).
+1. Em <https://developers.facebook.com/apps>, clique em **Criar app**:
+   - em **Casos de uso**, marque só **Conectar-se com clientes pelo WhatsApp**;
+   - em **Empresa**, escolha ou crie um portfólio empresarial (não precisa verificar a empresa para o número de teste);
+   - conclua **Requisitos** e **Visão geral** e crie o app.
+2. No app, abra o caso de uso do WhatsApp em **Configuração básica → Etapa 1. Experimente**:
+   - o número de teste aparece em **Número de teste**. Ele é dos EUA: `+1 (555) 123-4567` vai em `WHATSAPP_CABRABOM_NUMBER` como `15551234567` (só dígitos, com o código do país);
+   - em **Destinatário**, cadastre e verifique os telefones do grupo de teste (até **5**, somando prestadores e clientes). Mande a mensagem de exemplo para cada um para conferir;
+   - o **Token de acesso** não é usado: o CabraBom só recebe mensagens, nunca envia.
 3. Em **App settings → Basic**, copie o **App secret** (`META_APP_SECRET`).
 4. Invente um texto longo e aleatório para `WHATSAPP_VERIFY_TOKEN` (o mesmo comando do item 3.2 serve).
 5. O webhook só pode ser configurado depois do deploy da Vercel (passo 4).

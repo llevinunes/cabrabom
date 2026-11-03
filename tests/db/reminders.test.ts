@@ -28,7 +28,7 @@ afterEach(async () => {
 
 async function subscribeJoao() {
   const session = await createSession(db, JOAO_WHATSAPP);
-  await saveSubscription(db, session.id, { endpoint: "https://push.example/joao", keys: { p256dh: "p", auth: "a" } });
+  await saveSubscription(db, session.id, { endpoint: "https://fcm.googleapis.com/fcm/send/joao", keys: { p256dh: "p", auth: "a" } });
   sent = [];
 }
 

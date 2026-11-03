@@ -18,7 +18,7 @@ test("the provider sees the card to turn notifications on, and the service worke
 
 test("the subscribe endpoint refuses requests without a session", async ({ request }) => {
   const response = await request.post("/api/push/inscrever", {
-    data: { endpoint: "https://push.example/x", keys: { p256dh: "p", auth: "a" } },
+    data: { endpoint: "https://fcm.googleapis.com/fcm/send/x", keys: { p256dh: "p", auth: "a" } },
   });
   expect(response.status()).toBe(401);
 });

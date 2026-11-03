@@ -18,6 +18,8 @@ export const webPushSender: PushSender = async (subscription, payload) => {
       privateKey: config.VAPID_PRIVATE_KEY!,
     },
     TTL: 24 * 3600,
+    // A push service that does not answer must not hold the request or the cron run.
+    timeout: 5000,
   });
 };
 

@@ -3,9 +3,20 @@ import type { Session } from "@/lib/auth/session";
 import { withinLimit } from "@/lib/rate-limit";
 import type { Db } from "@/lib/supabase/server";
 
+/**
+ * Push services of Chrome/Android, Safari/iPhone, Firefox and Edge. The server POSTs to
+ * the stored endpoint, so any other host (internal addresses included) is refused.
+ */
+const PUSH_HOSTS = [/^fcm\.googleapis\.com$/, /(^|\.)push\.apple\.com$/, /^updates\.push\.services\.mozilla\.com$/, /\.notify\.windows\.com$/];
+
+function isPushService(endpoint: string): boolean {
+  const url = new URL(endpoint);
+  return url.protocol === "https:" && PUSH_HOSTS.some((host) => host.test(url.hostname));
+}
+
 /** What the browser's PushSubscription.toJSON() sends to /api/push/inscrever. */
 export const pushSubscriptionSchema = z.object({
-  endpoint: z.url().startsWith("https://").max(1000),
+  endpoint: z.url().max(1000).refine(isPushService, "not a known push service"),
   keys: z.object({ p256dh: z.string().min(1).max(200), auth: z.string().min(1).max(100) }),
 });
 

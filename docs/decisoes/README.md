@@ -42,3 +42,4 @@ Para registrar uma decisão nova, copie `0000-modelo.md`, use o próximo número
 | [0034](0034-localizacao-do-prestador-arredondada.md) | Localização do prestador arredondada | Aceita | IA e usuário |
 | [0035](0035-dados-da-busca-na-url.md) | Dados da busca na URL | Aceita | IA |
 | [0036](0036-pedido-aceito-nao-expira.md) | Pedido aceito não expira | Aceita | IA |
+| [0037](0037-confirmacao-do-cliente-em-um-toque.md) | Confirmação do cliente em um toque | Aceita | IA |

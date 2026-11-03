@@ -32,6 +32,18 @@ describe("parseEnv", () => {
       /WHATSAPP_CABRABOM_NUMBER/,
     );
   });
+
+  test("accepts the Meta test number, which is from the US", () => {
+    expect(parseEnv({ ...valid, WHATSAPP_CABRABOM_NUMBER: "15551879626" }).WHATSAPP_CABRABOM_NUMBER).toBe(
+      "15551879626",
+    );
+  });
+
+  test("rejects a number longer than the international limit of 15 digits", () => {
+    expect(() => parseEnv({ ...valid, WHATSAPP_CABRABOM_NUMBER: "1".repeat(16) })).toThrow(
+      /WHATSAPP_CABRABOM_NUMBER/,
+    );
+  });
 });
 
 test("requires a cookie secret of at least 32 characters", () => {

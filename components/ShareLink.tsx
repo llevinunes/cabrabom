@@ -9,7 +9,7 @@ import { Icon } from "@/components/ui/Icon";
  * wa.me link (works without JavaScript); where the Web Share API exists, it opens the
  * system share sheet instead.
  */
-export function ShareLink({ url, shareLabel, text }: { url: string; shareLabel: string; text: string }) {
+export function ShareLink({ url, shareLabel, text }: { url: string; shareLabel: React.ReactNode; text: string }) {
   const [copied, setCopied] = useState<boolean | null>(null);
 
   function share(event: React.MouseEvent) {
@@ -39,7 +39,8 @@ export function ShareLink({ url, shareLabel, text }: { url: string; shareLabel: 
         target="_blank"
         rel="noopener"
         onClick={share}
-        className={buttonClasses("whatsapp")}
+        // The label may carry a client name: let it wrap instead of widening the page.
+        className={`${buttonClasses("whatsapp")} min-w-0 text-center [overflow-wrap:anywhere]`}
       >
         <Icon name="chat" className="size-5" />
         {shareLabel}
@@ -47,7 +48,7 @@ export function ShareLink({ url, shareLabel, text }: { url: string; shareLabel: 
       <Button type="button" variant="outline" onClick={copy}>
         Copiar link
       </Button>
-      <p role="status" className="text-center text-sm font-semibold text-livre-texto">
+      <p role="status" className={`text-center text-sm font-semibold ${copied === false ? "text-secundario" : "text-livre-texto"}`}>
         {copied === true && "Link copiado"}
         {copied === false && "Não foi possível copiar. Segure o link acima para copiar."}
       </p>

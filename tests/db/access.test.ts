@@ -26,3 +26,10 @@ test("anon cannot read sessions", async () => {
   const { data } = await anon.from("sessions").select("*");
   expect(data ?? []).toEqual([]);
 });
+
+test("anon cannot read push subscriptions or reports", async () => {
+  for (const table of ["push_subscriptions", "reports"] as const) {
+    const { data } = await anon.from(table).select("*");
+    expect(data ?? []).toEqual([]);
+  }
+});

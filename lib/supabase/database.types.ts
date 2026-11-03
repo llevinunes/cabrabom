@@ -137,6 +137,32 @@ isOneToOne: true
       referencedColumns: ["id"]
     }
                   ]
+                },"reports": {
+                  Row: {
+                    "created_at": string,"description": string,"id": string,"provider_id": string | null,"resolved": boolean,"service_request_id": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"description": string,"id"?: string,"provider_id"?: string | null,"resolved"?: boolean,"service_request_id"?: string | null
+                  }
+                  Update: {
+                    "created_at"?: string,"description"?: string,"id"?: string,"provider_id"?: string | null,"resolved"?: boolean,"service_request_id"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "reports_provider_id_fkey"
+      columns: ["provider_id"]
+isOneToOne: false
+      referencedRelation: "providers"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "reports_service_request_id_fkey"
+      columns: ["service_request_id"]
+isOneToOne: false
+      referencedRelation: "service_requests"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"service_requests": {
                   Row: {
                     "accepted_at": string | null,"anonymous_client": string | null,"cancelled_at": string | null,"category_id": number,"client_confirmed_at": string | null,"client_name": string,"client_phone": string | null,"client_token": string | null,"completed_at": string | null,"completed_by": string | null,"created_at": string,"details": string,"distance_km": number | null,"expired_at": string | null,"finish_reminder_sent_at": string | null,"id": string,"provider_id": string,"provider_token": string,"status": string

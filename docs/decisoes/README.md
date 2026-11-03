@@ -49,3 +49,4 @@ Para registrar uma decisão nova, copie `0000-modelo.md`, use o próximo número
 | [0041](0041-denuncias-sem-tela-de-gerencia.md) | Denúncias sem tela de gerência | Aceita | Usuário |
 | [0042](0042-primeiro-deploy.md) | Primeiro deploy | Aceita | Usuário e IA |
 | [0043](0043-migracoes-aplicadas-pelo-github-actions.md) | Migrações aplicadas pelo GitHub Actions | Aceita | Usuário e IA |
+| [0044](0044-politica-de-privacidade-e-app-da-meta-publicado.md) | Política de privacidade e app da Meta publicado | Aceita | IA e usuário |

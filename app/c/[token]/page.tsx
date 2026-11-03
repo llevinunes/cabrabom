@@ -30,7 +30,18 @@ function RequestCard({ request }: { request: RequestForClient }) {
   );
 }
 
-function Message({ title, text, signOutButton }: { title: string; text?: string; signOutButton?: boolean }) {
+function Message({
+  title,
+  text,
+  signOutButton,
+  reportToken,
+}: {
+  title: string;
+  text?: string;
+  signOutButton?: boolean;
+  /** Shows "Relatar problema" for this service. */
+  reportToken?: string;
+}) {
   return (
     <main className="flex flex-col gap-5">
       <BrandMark />
@@ -43,6 +54,7 @@ function Message({ title, text, signOutButton }: { title: string; text?: string;
           </Button>
         </form>
       )}
+      {reportToken && <ReportLink requestToken={reportToken} />}
     </main>
   );
 }
@@ -57,7 +69,13 @@ export default async function ServiceForClient({ params, searchParams }: PagePro
   const provider = firstName(request.providerName);
 
   if (request.status === "cancelled") {
-    return <Message title="Este serviço foi cancelado" text="Se ainda precisar, faça uma nova busca no CabraBom." />;
+    return (
+      <Message
+        title="Este serviço foi cancelado"
+        text="Se ainda precisar, faça uma nova busca no CabraBom."
+        reportToken={token}
+      />
+    );
   }
 
   if (request.status === "accepted") {

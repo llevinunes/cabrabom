@@ -26,10 +26,27 @@ const schema = z.object({
 
 export type Env = z.infer<typeof schema>;
 
-export function parseEnv(source: Record<string, string | undefined>): Env {
+/**
+ * Optional while developing, required in the Vercel production deployment (VERCEL_ENV):
+ * without them login or reminders break silently. A local `next build` does not need them.
+ */
+const REQUIRED_IN_PRODUCTION = ["WHATSAPP_VERIFY_TOKEN", "META_APP_SECRET", "CRON_SECRET"] as const;
+
+export function parseEnv(source: Record<string, string | undefined>, deployment = process.env.VERCEL_ENV): Env {
   const result = schema.safeParse(source);
-  if (!result.success) {
-    const problems = result.error.issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`);
+  const problems = result.success
+    ? []
+    : result.error.issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`);
+  if (deployment === "production" && result.success) {
+    for (const name of REQUIRED_IN_PRODUCTION) {
+      if (!result.data[name]) problems.push(`${name}: required in production`);
+    }
+    // APP_URL defaults to localhost; in production it goes into every link sent on WhatsApp.
+    if (!source.APP_URL || !result.data.APP_URL.startsWith("https://") || /\/\/(localhost|127\.)/.test(result.data.APP_URL)) {
+      problems.push("APP_URL: required in production, the public https address of the app");
+    }
+  }
+  if (!result.success || problems.length > 0) {
     throw new Error(`Invalid environment variables:\n${problems.join("\n")}`);
   }
   return result.data;

@@ -48,3 +48,30 @@ describe("push", () => {
     expect(pushEnabled(env)).toBe(true);
   });
 });
+
+describe("production", () => {
+  const production = {
+    ...valid,
+    APP_URL: "https://cabrabom.vercel.app",
+    WHATSAPP_VERIFY_TOKEN: "verify",
+    META_APP_SECRET: "meta",
+    CRON_SECRET: "cron",
+  };
+
+  test("requires the webhook and cron secrets", () => {
+    expect(() => parseEnv({ ...production, META_APP_SECRET: undefined }, "production")).toThrow(/META_APP_SECRET/);
+    expect(() => parseEnv({ ...production, WHATSAPP_VERIFY_TOKEN: "" }, "production")).toThrow(/WHATSAPP_VERIFY_TOKEN/);
+    expect(() => parseEnv({ ...production, CRON_SECRET: undefined }, "production")).toThrow(/CRON_SECRET/);
+    expect(parseEnv(production, "production").CRON_SECRET).toBe("cron");
+  });
+
+  test("requires a public APP_URL: links sent on WhatsApp must not point to localhost", () => {
+    expect(() => parseEnv({ ...production, APP_URL: undefined }, "production")).toThrow(/APP_URL/);
+    expect(() => parseEnv({ ...production, APP_URL: "http://localhost:3000" }, "production")).toThrow(/APP_URL/);
+    expect(() => parseEnv({ ...production, APP_URL: "http://cabrabom.vercel.app" }, "production")).toThrow(/APP_URL/);
+  });
+
+  test("they stay optional in development", () => {
+    expect(() => parseEnv(valid, "development")).not.toThrow();
+  });
+});

@@ -47,3 +47,4 @@ Para registrar uma decisão nova, copie `0000-modelo.md`, use o próximo número
 | [0039](0039-notificacoes-com-web-push-por-sessao.md) | Notificações com web push, ligadas à sessão | Aceita | IA e usuário |
 | [0040](0040-lembretes-de-tres-dias.md) | Lembretes de três dias | Aceita | Usuário |
 | [0041](0041-denuncias-sem-tela-de-gerencia.md) | Denúncias sem tela de gerência | Aceita | Usuário |
+| [0042](0042-primeiro-deploy.md) | Primeiro deploy | Aceita | Usuário e IA |

@@ -1,10 +1,12 @@
 import { notFound } from "next/navigation";
+import { NotificationsCard } from "@/components/NotificationsCard";
 import { ServiceTimeline } from "@/components/ServiceTimeline";
 import { BrandMark } from "@/components/ui/BrandMark";
 import { Button } from "@/components/ui/Button";
 import { Chip } from "@/components/ui/Chip";
 import { FieldError } from "@/components/ui/Field";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { env, pushEnabled } from "@/lib/env";
 import { requestByClientToken, type RequestForClient } from "@/lib/service-requests/queries";
 import { createServerClient } from "@/lib/supabase/server";
 import { firstName } from "@/lib/text";
@@ -111,6 +113,13 @@ export default async function ServiceForClient({ params, searchParams }: PagePro
 
       {status === "in_progress" && (
         <>
+          <NotificationsCard
+            publicKey={pushEnabled(env()) ? env().VAPID_PUBLIC_KEY! : null}
+            loggedIn
+            returnTo={`/c/${token}`}
+            title="Quer ser avisado quando terminar?"
+            text="Ative as notificações. No iPhone, adicione o CabraBom à tela inicial antes."
+          />
           <section className="flex flex-col gap-2">
             <h2 className="text-sm font-semibold">O serviço já terminou?</h2>
             <form action={completeAsClient}>

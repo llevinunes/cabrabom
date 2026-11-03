@@ -77,6 +77,26 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"push_subscriptions": {
+                  Row: {
+                    "auth": string,"created_at": string,"endpoint": string,"id": string,"p256dh": string,"session_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "auth": string,"created_at"?: string,"endpoint": string,"id"?: string,"p256dh": string,"session_id": string
+                  }
+                  Update: {
+                    "auth"?: string,"created_at"?: string,"endpoint"?: string,"id"?: string,"p256dh"?: string,"session_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "push_subscriptions_session_id_fkey"
+      columns: ["session_id"]
+isOneToOne: false
+      referencedRelation: "sessions"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"rate_limit_hits": {
                   Row: {
                     "created_at": string,"id": number,"key": string
@@ -119,14 +139,14 @@ isOneToOne: true
                   ]
                 },"service_requests": {
                   Row: {
-                    "accepted_at": string | null,"anonymous_client": string | null,"cancelled_at": string | null,"category_id": number,"client_confirmed_at": string | null,"client_name": string,"client_phone": string | null,"client_token": string | null,"completed_at": string | null,"completed_by": string | null,"created_at": string,"details": string,"distance_km": number | null,"expired_at": string | null,"id": string,"provider_id": string,"provider_token": string,"status": string
+                    "accepted_at": string | null,"anonymous_client": string | null,"cancelled_at": string | null,"category_id": number,"client_confirmed_at": string | null,"client_name": string,"client_phone": string | null,"client_token": string | null,"completed_at": string | null,"completed_by": string | null,"created_at": string,"details": string,"distance_km": number | null,"expired_at": string | null,"finish_reminder_sent_at": string | null,"id": string,"provider_id": string,"provider_token": string,"status": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "accepted_at"?: string | null,"anonymous_client"?: string | null,"cancelled_at"?: string | null,"category_id": number,"client_confirmed_at"?: string | null,"client_name": string,"client_phone"?: string | null,"client_token"?: string | null,"completed_at"?: string | null,"completed_by"?: string | null,"created_at"?: string,"details": string,"distance_km"?: number | null,"expired_at"?: string | null,"id"?: string,"provider_id": string,"provider_token": string,"status"?: string
+                    "accepted_at"?: string | null,"anonymous_client"?: string | null,"cancelled_at"?: string | null,"category_id": number,"client_confirmed_at"?: string | null,"client_name": string,"client_phone"?: string | null,"client_token"?: string | null,"completed_at"?: string | null,"completed_by"?: string | null,"created_at"?: string,"details": string,"distance_km"?: number | null,"expired_at"?: string | null,"finish_reminder_sent_at"?: string | null,"id"?: string,"provider_id": string,"provider_token": string,"status"?: string
                   }
                   Update: {
-                    "accepted_at"?: string | null,"anonymous_client"?: string | null,"cancelled_at"?: string | null,"category_id"?: number,"client_confirmed_at"?: string | null,"client_name"?: string,"client_phone"?: string | null,"client_token"?: string | null,"completed_at"?: string | null,"completed_by"?: string | null,"created_at"?: string,"details"?: string,"distance_km"?: number | null,"expired_at"?: string | null,"id"?: string,"provider_id"?: string,"provider_token"?: string,"status"?: string
+                    "accepted_at"?: string | null,"anonymous_client"?: string | null,"cancelled_at"?: string | null,"category_id"?: number,"client_confirmed_at"?: string | null,"client_name"?: string,"client_phone"?: string | null,"client_token"?: string | null,"completed_at"?: string | null,"completed_by"?: string | null,"created_at"?: string,"details"?: string,"distance_km"?: number | null,"expired_at"?: string | null,"finish_reminder_sent_at"?: string | null,"id"?: string,"provider_id"?: string,"provider_token"?: string,"status"?: string
                   }
                   Relationships: [
                     {
@@ -186,6 +206,16 @@ isOneToOne: false
 "cancel_service_request":
 { Args: { "p_by": string,"p_phone": string,"p_token": string }; Returns: string
                            },
+"claim_busy_reminders":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "provider_whatsapp": string
+            }[]
+                           },
+"claim_finish_reminders":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "client_name": string,"provider_whatsapp": string
+            }[]
+                           },
 "coarse_point":
 { Args: { "p_lat": number,"p_lng": number }; Returns: unknown
                            },
@@ -223,6 +253,7 @@ isOneToOne: false
 "details": string,
 "distance_km": number | null,
 "expired_at": string | null,
+"finish_reminder_sent_at": string | null,
 "id": string,
 "provider_id": string,
 "provider_token": string,

@@ -3,7 +3,9 @@ import { redirect } from "next/navigation";
 import { BrandMark } from "@/components/ui/BrandMark";
 import { Button } from "@/components/ui/Button";
 import { providerDashboard } from "@/lib/providers/panel";
+import { NotificationsCard } from "@/components/NotificationsCard";
 import { ShareLink } from "@/components/ShareLink";
+import { env, pushEnabled } from "@/lib/env";
 import { confirmedText, deadlineText } from "@/lib/service-requests/deadline";
 import { recommendLink } from "@/lib/service-requests/links";
 import {
@@ -17,7 +19,7 @@ import { firstName, placeLabel } from "@/lib/text";
 import { getCurrentProvider } from "@/server/current-provider";
 import { getCurrentSession } from "@/server/session";
 import { signOut } from "@/server/session-actions";
-import { cancelService, finishService } from "./actions";
+import { cancelService, finishService, stillBusy } from "./actions";
 import { StatusSwitch } from "./StatusSwitch";
 
 function Stat({ value, label }: { value: number; label: string }) {
@@ -54,6 +56,23 @@ export default async function ProviderPanel() {
       </header>
 
       <StatusSwitch busy={dashboard.busy} />
+
+      {dashboard.busyReminded && (
+        <form action={stillBusy} className="flex flex-col gap-2 rounded-card bg-cabra p-4">
+          <p className="text-sm font-medium">Você está ocupado há alguns dias. Ainda está?</p>
+          <Button type="submit" variant="outline">
+            Continuo ocupado
+          </Button>
+        </form>
+      )}
+
+      <NotificationsCard
+        publicKey={pushEnabled(env()) ? env().VAPID_PUBLIC_KEY! : null}
+        loggedIn
+        returnTo="/painel"
+        title="Quer saber quando chegar um pedido?"
+        text="Ative as notificações. No iPhone, adicione o CabraBom à tela inicial antes."
+      />
 
       <div className="grid grid-cols-2 gap-3">
         <Stat value={dashboard.recommendationCount} label="recomendações" />

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { parseEnv } from "@/lib/env";
+import { parseEnv, pushEnabled } from "@/lib/env";
 
 const valid = {
   SUPABASE_URL: "http://127.0.0.1:54321",
@@ -36,4 +36,15 @@ describe("parseEnv", () => {
 
 test("requires a cookie secret of at least 32 characters", () => {
   expect(() => parseEnv({ ...valid, COOKIE_SECRET: "short" })).toThrow(/COOKIE_SECRET/);
+});
+
+describe("push", () => {
+  test("is off without the VAPID keys", () => {
+    expect(pushEnabled(parseEnv(valid))).toBe(false);
+  });
+
+  test("is on with the three VAPID values", () => {
+    const env = parseEnv({ ...valid, VAPID_PUBLIC_KEY: "pub", VAPID_PRIVATE_KEY: "priv", VAPID_SUBJECT: "mailto:a@b.c" });
+    expect(pushEnabled(env)).toBe(true);
+  });
 });

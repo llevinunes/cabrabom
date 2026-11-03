@@ -1,11 +1,14 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { finishedByClientMessage } from "@/lib/push/messages";
 import { cancelServiceRequest, completeServiceRequest } from "@/lib/service-requests/lifecycle";
+import { requestByClientToken } from "@/lib/service-requests/queries";
 import { createServerClient } from "@/lib/supabase/server";
 import { PENDING_CONFIRMATION_COOKIE } from "@/server/cookie-names";
 import { confirmAndGo } from "@/server/confirm-service";
 import { setSignedCookie } from "@/server/cookies";
+import { notifyLater } from "@/server/notify";
 import { getCurrentSession } from "@/server/session";
 
 /** How long the confirmation waits for the WhatsApp login. */
@@ -33,7 +36,11 @@ export async function completeAsClient(form: FormData): Promise<void> {
   const token = String(form.get("token") ?? "");
   const session = await getCurrentSession();
   if (!session) redirect(`/entrar?voltar=${encodeURIComponent(servicePath(token))}`);
-  await completeServiceRequest(createServerClient(), token, session.phone, "client");
+  const db = createServerClient();
+  if ((await completeServiceRequest(db, token, session.phone, "client")) === "completed") {
+    const request = await requestByClientToken(db, token);
+    if (request) notifyLater(request.providerWhatsapp, finishedByClientMessage(request.clientName));
+  }
   redirect(servicePath(token));
 }
 

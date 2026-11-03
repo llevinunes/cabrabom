@@ -48,3 +48,23 @@ describe("push", () => {
     expect(pushEnabled(env)).toBe(true);
   });
 });
+
+describe("production", () => {
+  const production = {
+    ...valid,
+    WHATSAPP_VERIFY_TOKEN: "verify",
+    META_APP_SECRET: "meta",
+    CRON_SECRET: "cron",
+  };
+
+  test("requires the webhook and cron secrets", () => {
+    expect(() => parseEnv({ ...production, META_APP_SECRET: undefined }, "production")).toThrow(/META_APP_SECRET/);
+    expect(() => parseEnv({ ...production, WHATSAPP_VERIFY_TOKEN: "" }, "production")).toThrow(/WHATSAPP_VERIFY_TOKEN/);
+    expect(() => parseEnv({ ...production, CRON_SECRET: undefined }, "production")).toThrow(/CRON_SECRET/);
+    expect(parseEnv(production, "production").CRON_SECRET).toBe("cron");
+  });
+
+  test("they stay optional in development", () => {
+    expect(() => parseEnv(valid, "development")).not.toThrow();
+  });
+});

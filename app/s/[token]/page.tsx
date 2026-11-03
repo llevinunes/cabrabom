@@ -11,7 +11,18 @@ import { createServerClient } from "@/lib/supabase/server";
 import { firstName, formatKm } from "@/lib/text";
 import { getCurrentSession } from "@/server/session";
 import { signOut } from "@/server/session-actions";
-import { acceptRequest } from "./actions";
+import { acceptRequest, cancelRequest } from "./actions";
+
+function CancelRequest({ token }: { token: string }) {
+  return (
+    <form action={cancelRequest} className="text-center">
+      <input type="hidden" name="token" value={token} />
+      <button type="submit" className="text-[13px] text-secundario underline">
+        Cancelar pedido
+      </button>
+    </form>
+  );
+}
 
 const FINAL_STATES: Record<string, string> = {
   in_progress: "Serviço em andamento",
@@ -76,6 +87,7 @@ export default async function ServiceRequestForProvider({ params }: PageProps<"/
         <Button variant="outline" href="/painel">
           Ir para o painel
         </Button>
+        <CancelRequest token={token} />
       </main>
     );
   }
@@ -137,6 +149,7 @@ export default async function ServiceRequestForProvider({ params }: PageProps<"/
       <Button variant="outline" href="/painel">
         Ir para o painel
       </Button>
+      <CancelRequest token={token} />
     </main>
   );
 }

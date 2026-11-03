@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { acceptServiceRequest } from "@/lib/service-requests/lifecycle";
+import { acceptServiceRequest, cancelServiceRequest } from "@/lib/service-requests/lifecycle";
 import { createServerClient } from "@/lib/supabase/server";
 import { getCurrentSession } from "@/server/session";
 
@@ -12,6 +12,16 @@ export async function acceptRequest(form: FormData): Promise<void> {
   const session = await getCurrentSession();
   if (!session) redirect(`/entrar?voltar=/s/${encodeURIComponent(token)}`);
   await acceptServiceRequest(createServerClient(), token, session.phone);
+  revalidatePath("/painel");
+  redirect(`/s/${encodeURIComponent(token)}`);
+}
+
+/** "Cancelar pedido" on an open or accepted request. */
+export async function cancelRequest(form: FormData): Promise<void> {
+  const token = String(form.get("token") ?? "");
+  const session = await getCurrentSession();
+  if (!session) redirect(`/entrar?voltar=/s/${encodeURIComponent(token)}`);
+  await cancelServiceRequest(createServerClient(), token, session.phone, "provider");
   revalidatePath("/painel");
   redirect(`/s/${encodeURIComponent(token)}`);
 }

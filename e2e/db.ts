@@ -93,3 +93,31 @@ export async function createInProgressRequestForJoao(clientName: string, provide
   const provider = await db.from("providers").update({ busy: true, busy_updated_at: now }).eq("id", JOAO.id);
   if (provider.error) throw provider.error;
 }
+
+/** A service João's client (83 98888-7777 by default) confirmed `confirmedMinutesAgo` ago and finished. */
+export async function createCompletedRequestForJoao(
+  clientName: string,
+  providerToken: string,
+  clientToken: string,
+  confirmedMinutesAgo: number,
+  clientPhone = "5583988887777",
+) {
+  await createAcceptedRequestForJoao(clientName, providerToken, clientToken);
+  const { error } = await testDb()
+    .from("service_requests")
+    .update({
+      status: "completed",
+      client_phone: clientPhone,
+      client_confirmed_at: new Date(Date.now() - confirmedMinutesAgo * 60_000).toISOString(),
+      completed_at: new Date().toISOString(),
+      completed_by: "client",
+    })
+    .eq("provider_token", providerToken);
+  if (error) throw error;
+}
+
+/** Recommendations are one per phone and provider: start each run without João's. */
+export async function clearJoaoRecommendations() {
+  const { error } = await testDb().from("recommendations").delete().eq("provider_id", JOAO.id);
+  if (error) throw error;
+}

@@ -7,7 +7,7 @@ export default async function globalSetup() {
   const db = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, {
     auth: { persistSession: false },
   });
-  for (const table of ["rate_limit_hits", "verifications", "sessions", "service_requests"] as const) {
+  for (const table of ["rate_limit_hits", "verifications", "sessions", "recommendations", "service_requests"] as const) {
     const { error } = await db.from(table).delete().not("id", "is", null);
     if (error) throw error;
   }

@@ -93,14 +93,14 @@ isOneToOne: false
                   ]
                 },"recommendations": {
                   Row: {
-                    "client_name": string,"client_phone": string,"comment": string | null,"created_at": string,"highlights": (string)[],"id": string,"provider_id": string,"service_request_id": string,"visible": boolean
+                    "client_name": string,"client_phone": string,"comment": string | null,"created_at": string,"flagged": boolean,"highlights": (string)[],"id": string,"provider_id": string,"service_request_id": string,"visible": boolean
                   }
                   ComputedFields: never
                   Insert: {
-                    "client_name": string,"client_phone": string,"comment"?: string | null,"created_at"?: string,"highlights"?: (string)[],"id"?: string,"provider_id": string,"service_request_id": string,"visible"?: boolean
+                    "client_name": string,"client_phone": string,"comment"?: string | null,"created_at"?: string,"flagged"?: boolean,"highlights"?: (string)[],"id"?: string,"provider_id": string,"service_request_id": string,"visible"?: boolean
                   }
                   Update: {
-                    "client_name"?: string,"client_phone"?: string,"comment"?: string | null,"created_at"?: string,"highlights"?: (string)[],"id"?: string,"provider_id"?: string,"service_request_id"?: string,"visible"?: boolean
+                    "client_name"?: string,"client_phone"?: string,"comment"?: string | null,"created_at"?: string,"flagged"?: boolean,"highlights"?: (string)[],"id"?: string,"provider_id"?: string,"service_request_id"?: string,"visible"?: boolean
                   }
                   Relationships: [
                     {
@@ -198,8 +198,14 @@ isOneToOne: false
 "create_provider":
 { Args: { "p_category_ids"?: (number)[],"p_city"?: string,"p_lat": number,"p_lng": number,"p_name": string,"p_neighborhood"?: string,"p_state"?: string,"p_whatsapp": string }; Returns: string
                            },
+"create_recommendation":
+{ Args: { "p_client_token": string,"p_comment"?: string,"p_highlights": (string)[],"p_phone": string }; Returns: string
+                           },
 "distance_to_provider":
 { Args: { "p_lat": number,"p_lng": number,"p_provider_id": string }; Returns: number
+                           },
+"lock_provider_of_request":
+{ Args: { "p_request_id": string }; Returns: string
                            },
 "lock_request_for_party":
 { Args: { "p_by": string,"p_phone": string,"p_token": string }; Returns: {

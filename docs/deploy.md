@@ -78,10 +78,14 @@ O deploy de produção sai da branch `main`. Antes de começar, o `develop` prec
 
 ## 5. Webhook do WhatsApp
 
-1. No app da Meta, em **WhatsApp → Configuration → Webhook**:
-   - Callback URL: `https://<seu-app>.vercel.app/api/whatsapp/webhook`
-   - Verify token: o mesmo `WHATSAPP_VERIFY_TOKEN`
-2. Clique em **Verify and save** e assine o campo **messages**.
+1. No app da Meta, no caso de uso do WhatsApp, em **Etapa 2. Configuração da produção → Configurar webhooks**:
+   - URL de callback: `https://<seu-app>.vercel.app/api/whatsapp/webhook`
+   - Verificar token: o mesmo `WHATSAPP_VERIFY_TOKEN`
+2. Clique em **Verificar e salvar** e, na tabela **Campos do webhook**, assine só o campo **messages**. O botão **Teste** dessa linha deve aparecer nos **Request Logs** da Vercel como `POST /api/whatsapp/webhook` com status 200 (401 indica `META_APP_SECRET` errado).
+3. **Publique o app** (ícone de publicar no menu da esquerda). Enquanto ele não está publicado, a Meta só envia os webhooks de teste do painel, e as mensagens reais de login nunca chegam (ADR 0044). Ela pede:
+   - URL da política de privacidade: `https://<seu-app>.vercel.app/privacidade`;
+   - categoria do app;
+   - ícone de 1024×1024, gerado a partir do `public/logo.svg`.
 
 ## 6. Conferir
 

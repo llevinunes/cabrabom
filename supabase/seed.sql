@@ -1,15 +1,7 @@
--- Development seed. The sample providers match the reference screens and live in
+-- Development seed only: never run in production (the categories come from migration 0011).
+-- The sample providers match the reference screens and live in
 -- Campina Grande (PB), around the city centre (-7.2307, -35.8811). Locations go through
 -- coarse_point like any other provider (~1 km precision, ADR 0034).
-
-insert into public.categories (name, slug) values
-  ('Eletricista', 'eletricista'),
-  ('Encanador', 'encanador'),
-  ('Pedreiro', 'pedreiro'),
-  ('Pintor', 'pintor'),
-  ('Diarista', 'diarista'),
-  ('Jardineiro', 'jardineiro'),
-  ('Montador de móveis', 'montador-de-moveis');
 
 insert into public.providers
   (id, name, whatsapp, location, neighborhood, city, state, busy, years_experience, whatsapp_consent_at)

@@ -106,6 +106,12 @@ docs/decisoes registros de decisão (ADRs)
 e2e/, tests/  testes
 ```
 
+## Deploy
+
+O passo a passo para colocar o app no ar (Vercel, Supabase Cloud e o número de teste da Meta) está em [docs/deploy.md](docs/deploy.md).
+
+As notificações precisam das chaves VAPID (`npx web-push generate-vapid-keys`) também em desenvolvimento; sem elas, o app funciona sem notificações. Veja o `.env.example`.
+
 ## Moderação
 
 Ainda não há tela de gerência (ADR 0041). Pelo painel do Supabase (Table Editor):

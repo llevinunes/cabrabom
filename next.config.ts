@@ -1,4 +1,9 @@
 import type { NextConfig } from "next";
+import { parseEnv } from "./lib/env";
+
+// Production deploy on Vercel: a missing or wrong variable fails the build, with its name,
+// instead of a green deploy that answers 500 (ADR 0042).
+if (process.env.VERCEL_ENV === "production") parseEnv(process.env);
 
 const nextConfig: NextConfig = {
   devIndicators: false,

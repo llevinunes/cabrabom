@@ -61,7 +61,7 @@ O deploy de produção sai da branch `main`. Antes de começar, o `develop` prec
    | `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` | passo 3.1 |
    | `CRON_SECRET` | passo 3.2 |
 
-   Sem `WHATSAPP_VERIFY_TOKEN`, `META_APP_SECRET` ou `CRON_SECRET`, o deploy de produção falha de propósito, com o nome da variável que falta.
+   Sem `WHATSAPP_VERIFY_TOKEN`, `META_APP_SECRET` ou `CRON_SECRET`, ou com um `APP_URL` que não seja o endereço público em `https://`, o build de produção falha de propósito e o log do build mostra o nome da variável.
 3. Faça o deploy. A Vercel lê o `vercel.json` e agenda os lembretes diários (`/api/cron/lembretes`, 9h de Fortaleza), enviando o `CRON_SECRET` sozinha.
 
 ## 5. Webhook do WhatsApp

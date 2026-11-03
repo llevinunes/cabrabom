@@ -41,6 +41,10 @@ export function parseEnv(source: Record<string, string | undefined>, deployment 
     for (const name of REQUIRED_IN_PRODUCTION) {
       if (!result.data[name]) problems.push(`${name}: required in production`);
     }
+    // APP_URL defaults to localhost; in production it goes into every link sent on WhatsApp.
+    if (!source.APP_URL || !result.data.APP_URL.startsWith("https://") || /\/\/(localhost|127\.)/.test(result.data.APP_URL)) {
+      problems.push("APP_URL: required in production, the public https address of the app");
+    }
   }
   if (!result.success || problems.length > 0) {
     throw new Error(`Invalid environment variables:\n${problems.join("\n")}`);

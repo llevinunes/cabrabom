@@ -14,7 +14,7 @@ Com o ciclo do serviço completo (Fase 2), o app vai para um primeiro teste em c
 - **Banco:** Supabase Cloud, plano gratuito, região São Paulo. Migrações aplicadas com `supabase db push`.
 - **Categorias numa migração** (`0011`), porque são dado do produto; o `seed.sql` fica só com os prestadores de exemplo e nunca roda em produção (IA).
 - **WhatsApp:** número de teste da Meta, com até 5 telefones cadastrados (usuário). Trocar por um chip próprio depois só muda variáveis.
-- **Segredos obrigatórios no deploy de produção:** sem `WHATSAPP_VERIFY_TOKEN`, `META_APP_SECRET` ou `CRON_SECRET`, o app falha ao subir quando `VERCEL_ENV=production`, em vez de quebrar o login ou os lembretes em silêncio. O build local não exige (IA).
+- **Variáveis obrigatórias no deploy de produção:** com `VERCEL_ENV=production`, o `next.config.ts` valida as variáveis e o build falha se faltar `WHATSAPP_VERIFY_TOKEN`, `META_APP_SECRET` ou `CRON_SECRET`, ou se `APP_URL` não for o endereço público em `https://`. Sem isso, o deploy ficaria verde e o login, os lembretes ou os links do WhatsApp quebrariam em silêncio. O build local não exige (IA).
 - **Versão 1.0.0** no primeiro deploy (usuário).
 - O passo a passo fica em `docs/deploy.md`.
 

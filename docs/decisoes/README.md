@@ -41,3 +41,4 @@ Para registrar uma decisão nova, copie `0000-modelo.md`, use o próximo número
 | [0033](0033-sessoes-proprias-em-vez-de-supabase-auth.md) | Sessões próprias em vez do Supabase Auth | Aceita | IA |
 | [0034](0034-localizacao-do-prestador-arredondada.md) | Localização do prestador arredondada | Aceita | IA e usuário |
 | [0035](0035-dados-da-busca-na-url.md) | Dados da busca na URL | Aceita | IA |
+| [0036](0036-pedido-aceito-nao-expira.md) | Pedido aceito não expira | Aceita | IA |

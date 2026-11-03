@@ -177,7 +177,10 @@ isOneToOne: false
             [_ in never]: never
           }
           Functions: {
-            "assert_valid_coordinates":
+            "accept_service_request":
+{ Args: { "p_client_token": string,"p_phone": string,"p_provider_token": string }; Returns: string
+                           },
+"assert_valid_coordinates":
 { Args: { "p_lat": number,"p_lng": number }; Returns: undefined
                            },
 "coarse_point":

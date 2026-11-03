@@ -1,8 +1,9 @@
 import { afterEach, describe, expect, test } from "vitest";
 import { providerDashboard, setBusy, updateProviderLocation } from "@/lib/providers/panel";
 import { openServiceRequest } from "@/lib/service-requests/open";
-import { pendingRequests, requestByToken } from "@/lib/service-requests/queries";
-import { JOAO_ID, categoryId, cleanTestData, testClient } from "./helpers";
+import { acceptServiceRequest } from "@/lib/service-requests/lifecycle";
+import { acceptedRequests, pendingRequests, requestByToken } from "@/lib/service-requests/queries";
+import { JOAO_ID, JOAO_WHATSAPP, categoryId, cleanTestData, testClient } from "./helpers";
 
 const db = testClient();
 
@@ -47,6 +48,7 @@ describe("requestByToken", () => {
     expect(await requestByToken(db, token)).toEqual({
       status: "open",
       createdAt: expect.any(Date),
+      clientToken: null,
       clientName: "Maria",
       details: "Trocar a fiação",
       distanceKm: 1.2,
@@ -90,5 +92,16 @@ describe("panel actions", () => {
     await updateProviderLocation(db, JOAO_ID, { lat: -7.24, lng: -35.88, neighborhood: null, city: "Campina Grande", state: "PB" });
     const dashboard = await providerDashboard(db, JOAO_ID);
     expect(dashboard).toMatchObject({ neighborhood: null, city: "Campina Grande", state: "PB" });
+  });
+});
+
+describe("acceptedRequests", () => {
+  test("lists only accepted requests of the provider, with the client token", async () => {
+    const accepted = await openRequest("b1", "Maria");
+    await openRequest("b2", "Pedro");
+    const clientToken = await acceptServiceRequest(db, accepted.token, JOAO_WHATSAPP);
+    expect(await acceptedRequests(db, JOAO_ID)).toEqual([
+      expect.objectContaining({ providerToken: accepted.token, clientToken, clientName: "Maria", category: "Eletricista" }),
+    ]);
   });
 });

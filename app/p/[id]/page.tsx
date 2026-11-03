@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { ChatButton } from "@/components/ChatButton";
+import { ReportLink } from "@/components/ReportLink";
 import { Avatar } from "@/components/ui/Avatar";
 import { Chip } from "@/components/ui/Chip";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
@@ -104,6 +105,7 @@ export default async function ProviderProfile({ params, searchParams }: PageProp
         search={search}
         offersCategory={!!search && profile.categories.some((c) => c.slug === search.category)}
       />
+      <ReportLink providerId={profile.id} />
     </main>
   );
 }

@@ -4,6 +4,7 @@ import { Chip } from "@/components/ui/Chip";
 import { Icon } from "@/components/ui/Icon";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { ShareLink } from "@/components/ShareLink";
+import { ReportLink } from "@/components/ReportLink";
 import { isExpired, receivedText } from "@/lib/service-requests/deadline";
 import { clientLink } from "@/lib/service-requests/links";
 import { requestByToken } from "@/lib/service-requests/queries";
@@ -88,6 +89,7 @@ export default async function ServiceRequestForProvider({ params }: PageProps<"/
           Ir para o painel
         </Button>
         <CancelRequest token={token} />
+        <ReportLink requestToken={token} />
       </main>
     );
   }
@@ -100,6 +102,7 @@ export default async function ServiceRequestForProvider({ params }: PageProps<"/
         <Button variant="outline" href="/painel">
           Ir para o painel
         </Button>
+        <ReportLink requestToken={token} />
       </main>
     );
   }
@@ -150,6 +153,7 @@ export default async function ServiceRequestForProvider({ params }: PageProps<"/
         Ir para o painel
       </Button>
       <CancelRequest token={token} />
+      <ReportLink requestToken={token} />
     </main>
   );
 }

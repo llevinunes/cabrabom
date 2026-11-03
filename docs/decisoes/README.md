@@ -46,3 +46,4 @@ Para registrar uma decisão nova, copie `0000-modelo.md`, use o próximo número
 | [0038](0038-recomendacao-uma-hora-depois-e-sinalizacao.md) | Recomendação uma hora depois e sinalização de abuso | Aceita | Usuário e IA |
 | [0039](0039-notificacoes-com-web-push-por-sessao.md) | Notificações com web push, ligadas à sessão | Aceita | IA e usuário |
 | [0040](0040-lembretes-de-tres-dias.md) | Lembretes de três dias | Aceita | Usuário |
+| [0041](0041-denuncias-sem-tela-de-gerencia.md) | Denúncias sem tela de gerência | Aceita | Usuário |

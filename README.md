@@ -106,6 +106,14 @@ docs/decisoes registros de decisão (ADRs)
 e2e/, tests/  testes
 ```
 
+## Moderação
+
+Ainda não há tela de gerência (ADR 0041). Pelo painel do Supabase (Table Editor):
+
+1. **Denúncias:** tabela `reports`, filtrando `resolved = false`. Depois de tratar, marque `resolved = true`.
+2. **Ocultar um prestador:** em `providers`, `hidden = true`. Ele some da busca e do perfil.
+3. **Ocultar uma recomendação:** em `recommendations`, `visible = false`. Confira também as que têm `flagged = true` (ADR 0038).
+
 ## Decisões
 
 As escolhas de produto e arquitetura estão registradas em [`docs/decisoes/`](docs/decisoes/README.md), com contexto, alternativas e consequências.

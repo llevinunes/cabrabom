@@ -39,3 +39,33 @@ export async function createCityOnlyProvider(name: string, whatsapp: string) {
   });
   if (error) throw error;
 }
+
+/** A request João already accepted: the client can open /c/{clientToken}. */
+export async function createAcceptedRequestForJoao(clientName: string, providerToken: string, clientToken: string) {
+  await createRequestForJoao(clientName, providerToken);
+  const { error } = await testDb()
+    .from("service_requests")
+    .update({ status: "accepted", accepted_at: new Date().toISOString(), client_token: clientToken })
+    .eq("provider_token", providerToken);
+  if (error) throw error;
+}
+
+export async function requestStatus(providerToken: string) {
+  const { data } = await testDb()
+    .from("service_requests")
+    .select("status, client_phone")
+    .eq("provider_token", providerToken)
+    .single();
+  return data;
+}
+
+export async function joaoIsBusy() {
+  const { data } = await testDb().from("providers").select("busy").eq("id", JOAO.id).single();
+  return data!.busy as boolean;
+}
+
+/** Confirming a service makes João busy; later specs expect the seed state (free). */
+export async function setJoaoFree() {
+  const { error } = await testDb().from("providers").update({ busy: false }).eq("id", JOAO.id);
+  if (error) throw error;
+}

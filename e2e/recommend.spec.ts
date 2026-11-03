@@ -6,13 +6,17 @@ const run = Date.now().toString(36);
 const token = (prefix: string) => `${prefix}${run}`.padEnd(24, "0").slice(0, 24);
 const DONE = { provider: token("e2eRecP"), client: token("e2eRecC") };
 const SOON = { provider: token("e2eCedoP"), client: token("e2eCedoC") };
+const AGAIN = { provider: token("e2eDnovP"), client: token("e2eDnovC") };
 const COMMENT = `Caprichou muito ${run}`;
 
 test.beforeAll(async () => {
   await clearJoaoRecommendations();
   await createCompletedRequestForJoao(`Maria Recomenda ${run}`, DONE.provider, DONE.client, 120);
-  await createCompletedRequestForJoao(`Ana Cedo ${run}`, SOON.provider, SOON.client, 30);
+  await createCompletedRequestForJoao(`Ana Cedo ${run}`, SOON.provider, SOON.client, 30, "5583966665555");
+  await createCompletedRequestForJoao(`Maria de Novo ${run}`, AGAIN.provider, AGAIN.client, 120);
 });
+
+test.describe.configure({ mode: "serial" });
 test.afterAll(clearJoaoRecommendations);
 
 test("the client recommends João and it shows on his profile", async ({ page, context }) => {
@@ -36,9 +40,17 @@ test("the client recommends João and it shows on his profile", async ({ page, c
   await expect(page.getByText("Maria", { exact: true })).toBeVisible();
 });
 
+test("a second service of the same client shows a thank-you instead of the form", async ({ page, context }) => {
+  await page.goto(`/entrar?voltar=/r/${AGAIN.client}`);
+  await loginWithSimulator(page, context, "83 98888-7777");
+  await page.waitForURL((url) => url.pathname === `/r/${AGAIN.client}`, { timeout: 15_000 });
+  await expect(page.getByRole("heading", { name: "Você já recomendou João" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Enviar recomendação" })).toHaveCount(0);
+});
+
 test("before one hour after confirming, the page says when it opens", async ({ page, context }) => {
   await page.goto(`/entrar?voltar=/r/${SOON.client}`);
-  await loginWithSimulator(page, context, "83 98888-7777");
+  await loginWithSimulator(page, context, "83 96666-5555");
   await page.waitForURL((url) => url.pathname === `/r/${SOON.client}`, { timeout: 15_000 });
   await expect(page.getByText(/Você poderá recomendar a partir das \d{2}:\d{2}/)).toBeVisible();
   await expect(page.getByRole("button", { name: "Enviar recomendação" })).toHaveCount(0);

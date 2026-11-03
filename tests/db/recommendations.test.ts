@@ -1,5 +1,5 @@
 import { afterEach, beforeAll, expect, test } from "vitest";
-import { createRecommendation } from "@/lib/recommendations/create";
+import { createRecommendation, hasRecommended } from "@/lib/recommendations/create";
 import { recommendationSummary } from "@/lib/recommendations/summary";
 import {
   acceptServiceRequest,
@@ -114,4 +114,24 @@ test("recommendationSummary counts highlights and lists comments, only visible o
     ],
     comments: [{ firstName: "Maria", comment: "Ótimo serviço", createdAt: expect.any(Date) }],
   });
+});
+
+test("two different services of the same client submitted together: one published, no error", async () => {
+  for (let round = 0; round < 10; round++) {
+    await db.from("recommendations").delete().eq("client_phone", CLIENT);
+    const first = await finishedService();
+    const second = await finishedService();
+    const results = await Promise.all([
+      createRecommendation(db, first, CLIENT, ANSWER),
+      createRecommendation(db, second, CLIENT, ANSWER),
+    ]);
+    expect(results.sort()).toEqual(["already_recommended", "published"]);
+  }
+});
+
+test("hasRecommended tells whether this phone already recommended the provider", async () => {
+  const token = await finishedService();
+  expect(await hasRecommended(db, JOAO_ID, CLIENT)).toBe(false);
+  await createRecommendation(db, token, CLIENT, ANSWER);
+  expect(await hasRecommended(db, JOAO_ID, CLIENT)).toBe(true);
 });

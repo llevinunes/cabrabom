@@ -94,19 +94,20 @@ export async function createInProgressRequestForJoao(clientName: string, provide
   if (provider.error) throw provider.error;
 }
 
-/** A service João's client (83 98888-7777) confirmed `confirmedMinutesAgo` ago and finished. */
+/** A service João's client (83 98888-7777 by default) confirmed `confirmedMinutesAgo` ago and finished. */
 export async function createCompletedRequestForJoao(
   clientName: string,
   providerToken: string,
   clientToken: string,
   confirmedMinutesAgo: number,
+  clientPhone = "5583988887777",
 ) {
   await createAcceptedRequestForJoao(clientName, providerToken, clientToken);
   const { error } = await testDb()
     .from("service_requests")
     .update({
       status: "completed",
-      client_phone: "5583988887777",
+      client_phone: clientPhone,
       client_confirmed_at: new Date(Date.now() - confirmedMinutesAgo * 60_000).toISOString(),
       completed_at: new Date().toISOString(),
       completed_by: "client",

@@ -33,3 +33,14 @@ export async function createRecommendation(
 export function recommendAvailableAt(confirmedAt: Date): Date {
   return new Date(confirmedAt.getTime() + RECOMMEND_AFTER_MINUTES * 60_000);
 }
+
+/** A phone recommends a provider once (spec 6): later services show a thank-you instead of the form. */
+export async function hasRecommended(db: Db, providerId: string, phone: string): Promise<boolean> {
+  const { count, error } = await db
+    .from("recommendations")
+    .select("id", { count: "exact", head: true })
+    .eq("provider_id", providerId)
+    .eq("client_phone", phone);
+  if (error) throw error;
+  return (count ?? 0) > 0;
+}

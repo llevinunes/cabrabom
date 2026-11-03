@@ -20,6 +20,19 @@ as $$
      );
 $$;
 
+-- Every change to a provider's busy flag first locks the provider row, so two services
+-- ending (or one starting while another ends) at the same time are decided one after
+-- the other, each seeing what the other did (spec 3.6). Returns the provider id.
+create function public.lock_provider_of_request(p_request_id uuid)
+returns uuid
+language sql
+set search_path = public
+as $$
+  select p.id from providers p
+   where p.id = (select provider_id from service_requests where id = p_request_id)
+     for update;
+$$;
+
 -- The request behind a token, locked, if the phone is the right party:
 -- 'provider' → provider_token and the provider's WhatsApp; 'client' → client_token and client_phone.
 create function public.lock_request_for_party(p_token text, p_phone text, p_by text)
@@ -28,22 +41,26 @@ language plpgsql
 set search_path = public
 as $$
 declare
+  v_id uuid;
   v_request service_requests%rowtype;
 begin
   if p_by = 'provider' then
-    select r.* into v_request
+    select r.id into v_id
       from service_requests r
       join providers p on p.id = r.provider_id
-     where r.provider_token = p_token and p.whatsapp = p_phone
-       for update of r;
+     where r.provider_token = p_token and p.whatsapp = p_phone;
   elsif p_by = 'client' then
-    select r.* into v_request
-      from service_requests r
-     where r.client_token = p_token and r.client_phone = p_phone
-       for update;
+    select r.id into v_id from service_requests r where r.client_token = p_token and r.client_phone = p_phone;
   else
     raise exception 'unknown party %', p_by using errcode = '22023';
   end if;
+  if v_id is null then
+    return v_request;
+  end if;
+
+  perform lock_provider_of_request(v_id);
+  -- Read again after the lock: another transaction may have changed it meanwhile.
+  select r.* into v_request from service_requests r where r.id = v_id for update;
   return v_request;
 end;
 $$;
@@ -54,13 +71,16 @@ language plpgsql
 set search_path = public
 as $$
 declare
+  v_id uuid;
   v_request service_requests%rowtype;
   v_provider_phone text;
 begin
-  select r.* into v_request from service_requests r where r.client_token = p_client_token for update;
-  if not found then
+  select id into v_id from service_requests where client_token = p_client_token;
+  if v_id is null then
     return 'unavailable';
   end if;
+  perform lock_provider_of_request(v_id);
+  select r.* into v_request from service_requests r where r.id = v_id for update;
   select whatsapp into v_provider_phone from providers where id = v_request.provider_id;
 
   if v_request.status in ('in_progress', 'completed', 'recommended') then
@@ -146,6 +166,7 @@ end;
 $$;
 
 revoke execute on function public.release_provider_if_idle(uuid, uuid) from public, anon, authenticated;
+revoke execute on function public.lock_provider_of_request(uuid) from public, anon, authenticated;
 revoke execute on function public.lock_request_for_party(text, text, text) from public, anon, authenticated;
 revoke execute on function public.confirm_service_request(text, text) from public, anon, authenticated;
 revoke execute on function public.complete_service_request(text, text, text) from public, anon, authenticated;

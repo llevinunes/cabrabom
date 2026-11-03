@@ -102,6 +102,7 @@ export default async function ServiceRequestForProvider({ params }: PageProps<"/
         <Button variant="outline" href="/painel">
           Ir para o painel
         </Button>
+        <ReportLink requestToken={token} />
       </main>
     );
   }

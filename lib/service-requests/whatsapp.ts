@@ -3,7 +3,7 @@ const BIDI_CONTROLS = /[\u200E\u200F\u202A-\u202E\u2066-\u2069]/g;
 
 const clean = (text: string) => text.replace(BIDI_CONTROLS, "");
 /** Single line: a name with line breaks could fake an extra "Para aceitar" line. */
-const oneLine = (text: string) => clean(text).replace(/\s+/g, " ").trim();
+export const oneLine = (text: string) => clean(text).replace(/\s+/g, " ").trim();
 
 /** wa.me link with the ready-made first message of spec 3.2, including the accept link. */
 export function whatsappLink(

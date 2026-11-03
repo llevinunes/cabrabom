@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { BrandMark } from "@/components/ui/BrandMark";
 import { Button } from "@/components/ui/Button";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
-import { recommendAvailableAt } from "@/lib/recommendations/create";
+import { hasRecommended, recommendAvailableAt } from "@/lib/recommendations/create";
 import { requestByClientToken } from "@/lib/service-requests/queries";
 import { createServerClient } from "@/lib/supabase/server";
 import { firstName } from "@/lib/text";
@@ -28,7 +28,8 @@ function localTime(date: Date): string {
 // Screen 06 · recommend the provider. Only the phone that confirmed the service (spec 3.4).
 export default async function Recommend({ params }: PageProps<"/r/[token]">) {
   const { token } = await params;
-  const request = await requestByClientToken(createServerClient(), token);
+  const db = createServerClient();
+  const request = await requestByClientToken(db, token);
   if (!request || !request.clientPhone) notFound();
   const provider = firstName(request.providerName);
 
@@ -80,6 +81,16 @@ export default async function Recommend({ params }: PageProps<"/r/[token]">) {
   }
   if (request.status !== "completed") {
     return <Message title="Este serviço não pode ser recomendado" />;
+  }
+  // One recommendation per phone and provider (spec 6): a later service gets a thank-you.
+  if (await hasRecommended(db, request.providerId, session.phone)) {
+    return (
+      <Message title={`Você já recomendou ${provider}`} text="Obrigado! Cada pessoa recomenda um profissional uma vez.">
+        <Button variant="outline" href={`/p/${request.providerId}`}>
+          Ver perfil
+        </Button>
+      </Message>
+    );
   }
 
   const availableAt = recommendAvailableAt(request.clientConfirmedAt!);

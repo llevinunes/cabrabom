@@ -23,6 +23,9 @@ declare
   v_provider_phone text;
   v_recent_providers int;
 begin
+  -- One recommendation decision at a time per phone: two requests of the same client
+  -- (or many providers at once, dodging the flag) are decided one after the other.
+  perform pg_advisory_xact_lock(hashtext('recommendation:' || p_phone));
   select r.* into v_request from service_requests r where r.client_token = p_client_token for update;
   if not found or v_request.client_phone is distinct from p_phone then
     return 'not_yours';

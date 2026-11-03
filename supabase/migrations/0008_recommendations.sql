@@ -1,6 +1,6 @@
 -- 0008 · v0.11.0 · PR #18
 -- Recommendations (spec 3.4 and 6). Published only by the phone that confirmed a
--- completed service, at least 1 hour after confirming (ADR 0039). Phones that recommend
+-- completed service, at least 1 hour after confirming (ADR 0038). Phones that recommend
 -- many providers in a short time are flagged for manual review, not blocked.
 
 alter table public.recommendations

@@ -1,7 +1,7 @@
 import type { Db } from "@/lib/supabase/server";
 import type { RecommendationInput } from "./highlights";
 
-/** Minimum time between the client confirming and recommending (ADR 0039). */
+/** Minimum time between the client confirming and recommending (ADR 0038). */
 export const RECOMMEND_AFTER_MINUTES = 60;
 
 export type RecommendResult =

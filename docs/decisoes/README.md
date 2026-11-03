@@ -43,3 +43,4 @@ Para registrar uma decisão nova, copie `0000-modelo.md`, use o próximo número
 | [0035](0035-dados-da-busca-na-url.md) | Dados da busca na URL | Aceita | IA |
 | [0036](0036-pedido-aceito-nao-expira.md) | Pedido aceito não expira | Aceita | IA |
 | [0037](0037-confirmacao-do-cliente-em-um-toque.md) | Confirmação do cliente em um toque | Aceita | IA |
+| [0038](0038-recomendacao-uma-hora-depois-e-sinalizacao.md) | Recomendação uma hora depois e sinalização de abuso | Aceita | Usuário e IA |

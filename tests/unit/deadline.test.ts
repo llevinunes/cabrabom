@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { deadlineText, isExpired, receivedText } from "@/lib/service-requests/deadline";
+import { confirmedText, deadlineText, isExpired, receivedText } from "@/lib/service-requests/deadline";
 
 const created = new Date("2026-11-01T12:00:00Z");
 const at = (iso: string) => new Date(iso);
@@ -32,4 +32,14 @@ test("receivedText says how long ago the request arrived", () => {
   expect(receivedText(created, at("2026-11-01T15:00:00Z"))).toBe("Recebida há 3 h");
   expect(receivedText(created, at("2026-11-03T12:00:00Z"))).toBe("Recebida há 2 dias");
   expect(receivedText(created, at("2026-11-02T12:00:00Z"))).toBe("Recebida há 1 dia");
+});
+
+describe("confirmedText", () => {
+  // Calendar days in Brazil (UTC-3): 02:00Z on the 2nd is still the evening of the 1st.
+  const confirmed = at("2026-11-01T20:00:00Z");
+  test("today, yesterday and N days ago, by the local calendar", () => {
+    expect(confirmedText(confirmed, at("2026-11-02T02:00:00Z"))).toBe("confirmado hoje");
+    expect(confirmedText(confirmed, at("2026-11-02T12:00:00Z"))).toBe("confirmado ontem");
+    expect(confirmedText(confirmed, at("2026-11-04T12:00:00Z"))).toBe("confirmado há 3 dias");
+  });
 });

@@ -64,8 +64,32 @@ export async function joaoIsBusy() {
   return data!.busy as boolean;
 }
 
-/** Confirming a service makes João busy; later specs expect the seed state (free). */
+/**
+ * Confirming a service makes João busy, and he stays busy while any service is in
+ * progress. Later specs expect the seed state: no service in progress, free.
+ */
 export async function setJoaoFree() {
-  const { error } = await testDb().from("providers").update({ busy: false }).eq("id", JOAO.id);
+  const db = testDb();
+  const requests = await db
+    .from("service_requests")
+    .update({ status: "cancelled", cancelled_at: new Date().toISOString() })
+    .eq("provider_id", JOAO.id)
+    .eq("status", "in_progress");
+  if (requests.error) throw requests.error;
+  const { error } = await db.from("providers").update({ busy: false }).eq("id", JOAO.id);
   if (error) throw error;
+}
+
+/** A service João's client already confirmed: João is busy until it ends. */
+export async function createInProgressRequestForJoao(clientName: string, providerToken: string, clientToken: string) {
+  await createAcceptedRequestForJoao(clientName, providerToken, clientToken);
+  const db = testDb();
+  const now = new Date().toISOString();
+  const request = await db
+    .from("service_requests")
+    .update({ status: "in_progress", client_confirmed_at: now, client_phone: "5583988887777" })
+    .eq("provider_token", providerToken);
+  if (request.error) throw request.error;
+  const provider = await db.from("providers").update({ busy: true, busy_updated_at: now }).eq("id", JOAO.id);
+  if (provider.error) throw provider.error;
 }

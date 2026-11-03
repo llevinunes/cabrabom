@@ -30,3 +30,16 @@ export function receivedText(createdAt: Date, now: Date = new Date()): string {
   const days = Math.floor(hours / 24);
   return `Recebida há ${days} ${days === 1 ? "dia" : "dias"}`;
 }
+
+/** Calendar day in Brazil (the app's users are in UTC-3), as "YYYY-MM-DD". */
+function localDay(date: Date): string {
+  return date.toLocaleDateString("en-CA", { timeZone: "America/Fortaleza" });
+}
+
+/** "confirmado hoje" / "confirmado ontem" / "confirmado há 3 dias" (screen 10). */
+export function confirmedText(confirmedAt: Date, now: Date = new Date()): string {
+  const days = Math.round((Date.parse(localDay(now)) - Date.parse(localDay(confirmedAt))) / (24 * HOUR));
+  if (days <= 0) return "confirmado hoje";
+  if (days === 1) return "confirmado ontem";
+  return `confirmado há ${days} dias`;
+}

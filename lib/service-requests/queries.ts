@@ -128,3 +128,58 @@ export async function requestByClientToken(db: Db, token: string): Promise<Reque
     providerWhatsapp: data.providers.whatsapp,
   };
 }
+
+export type InProgressRequest = {
+  providerToken: string;
+  clientName: string;
+  category: string;
+  details: string;
+  confirmedAt: Date;
+};
+
+/** "Em andamento" (screen 10): services the client confirmed, newest first. */
+export async function inProgressRequests(db: Db, providerId: string): Promise<InProgressRequest[]> {
+  const { data, error } = await db
+    .from("service_requests")
+    .select("provider_token, client_name, details, client_confirmed_at, categories(name)")
+    .eq("provider_id", providerId)
+    .eq("status", "in_progress")
+    .order("client_confirmed_at", { ascending: false })
+    .limit(PANEL_LIMIT);
+  if (error) throw error;
+  return data.map((row) => ({
+    providerToken: row.provider_token,
+    clientName: row.client_name,
+    category: row.categories.name,
+    details: row.details,
+    confirmedAt: new Date(row.client_confirmed_at!),
+  }));
+}
+
+const RECOMMENDATION_ASK_DAYS = 7;
+const RECOMMENDATION_ASK_LIMIT = 10;
+
+export type FinishedRequest = { clientToken: string; clientName: string; completedAt: Date };
+
+/**
+ * "Peça uma recomendação" (spec 3.3, step 4): services the provider finished in the last
+ * days. When the client finished, the recommendation form already showed up for them.
+ */
+export async function finishedAwaitingRecommendation(db: Db, providerId: string): Promise<FinishedRequest[]> {
+  const since = new Date(Date.now() - RECOMMENDATION_ASK_DAYS * 24 * 3_600_000).toISOString();
+  const { data, error } = await db
+    .from("service_requests")
+    .select("client_token, client_name, completed_at")
+    .eq("provider_id", providerId)
+    .eq("status", "completed")
+    .eq("completed_by", "provider")
+    .gt("completed_at", since)
+    .order("completed_at", { ascending: false })
+    .limit(RECOMMENDATION_ASK_LIMIT);
+  if (error) throw error;
+  return data.map((row) => ({
+    clientToken: row.client_token!,
+    clientName: row.client_name,
+    completedAt: new Date(row.completed_at!),
+  }));
+}

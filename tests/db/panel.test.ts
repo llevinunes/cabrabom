@@ -86,6 +86,7 @@ describe("panel actions", () => {
     expect(await providerDashboard(db, JOAO_ID)).toEqual({
       name: "João Silva",
       busy: false,
+      busyReminded: false,
       neighborhood: "Centro",
       city: "Campina Grande",
       state: "PB",

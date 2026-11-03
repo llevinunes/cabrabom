@@ -206,6 +206,16 @@ isOneToOne: false
 "cancel_service_request":
 { Args: { "p_by": string,"p_phone": string,"p_token": string }; Returns: string
                            },
+"claim_busy_reminders":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "provider_whatsapp": string
+            }[]
+                           },
+"claim_finish_reminders":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "client_name": string,"provider_whatsapp": string
+            }[]
+                           },
 "coarse_point":
 { Args: { "p_lat": number,"p_lng": number }; Returns: unknown
                            },

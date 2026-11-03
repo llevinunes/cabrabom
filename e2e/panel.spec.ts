@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { JOAO, createRequestForJoao } from "./db";
+import { JOAO, createRequestForJoao, setJoaoFree, testDb } from "./db";
 import { loginWithSimulator } from "./helpers";
 
 // Unique per run: the worker may restart and run beforeAll again.
@@ -81,4 +81,25 @@ test("a logged-in person who is not a provider is sent to the signup, not to log
   await page.goto("/painel/localizacao");
   await loginWithSimulator(page, context, "83 95555-3434");
   await page.waitForURL((url) => url.pathname === "/prestador", { timeout: 10_000 });
+});
+
+test("after the busy reminder, the provider can say they are still busy", async ({ page, context }) => {
+  const db = testDb();
+  const fourDaysAgo = new Date(Date.now() - 4 * 86_400_000).toISOString();
+  await db
+    .from("providers")
+    .update({ busy: true, busy_updated_at: fourDaysAgo, busy_reminder_sent_at: new Date().toISOString() })
+    .eq("id", JOAO.id);
+  try {
+    await page.goto("/painel");
+    await loginWithSimulator(page, context, JOAO.phone);
+    await page.waitForURL((url) => url.pathname === "/painel", { timeout: 10_000 });
+    await page.getByRole("button", { name: "Continuo ocupado" }).click();
+    await expect(page.getByRole("button", { name: "Continuo ocupado" })).toHaveCount(0, { timeout: 15_000 });
+    const { data } = await db.from("providers").select("busy, busy_updated_at").eq("id", JOAO.id).single();
+    expect(data!.busy).toBe(true);
+    expect(new Date(data!.busy_updated_at).getTime()).toBeGreaterThan(Date.now() - 60_000);
+  } finally {
+    await setJoaoFree();
+  }
 });

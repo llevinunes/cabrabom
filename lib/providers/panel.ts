@@ -4,6 +4,8 @@ import type { Db } from "@/lib/supabase/server";
 export type Dashboard = {
   name: string;
   busy: boolean;
+  /** Busy by hand for 3 days and already reminded (ADR 0040): offer "Continuo ocupado". */
+  busyReminded: boolean;
   neighborhood: string | null;
   city: string | null;
   state: string | null;
@@ -14,7 +16,11 @@ export type Dashboard = {
 /** What /painel shows at the top (screen 10). */
 export async function providerDashboard(db: Db, providerId: string): Promise<Dashboard | null> {
   const [provider, recommendations, services] = await Promise.all([
-    db.from("providers").select("name, busy, neighborhood, city, state").eq("id", providerId).maybeSingle(),
+    db
+      .from("providers")
+      .select("name, busy, busy_updated_at, busy_reminder_sent_at, neighborhood, city, state")
+      .eq("id", providerId)
+      .maybeSingle(),
     db.from("recommendations").select("id", { count: "exact", head: true }).eq("provider_id", providerId).eq("visible", true),
     db
       .from("service_requests")
@@ -24,8 +30,11 @@ export async function providerDashboard(db: Db, providerId: string): Promise<Das
   ]);
   for (const result of [provider, recommendations, services]) if (result.error) throw result.error;
   if (!provider.data) return null;
+  const { busy_updated_at, busy_reminder_sent_at, ...data } = provider.data;
   return {
-    ...provider.data,
+    ...data,
+    busyReminded:
+      data.busy && busy_reminder_sent_at !== null && new Date(busy_reminder_sent_at) >= new Date(busy_updated_at),
     recommendationCount: recommendations.count ?? 0,
     servicesCount: services.count ?? 0,
   };

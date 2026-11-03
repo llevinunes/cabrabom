@@ -22,6 +22,14 @@ export async function toggleBusy(form: FormData): Promise<void> {
   revalidatePath("/painel");
 }
 
+/** "Continuo ocupado" after the busy reminder: renews busy_updated_at, so the count restarts (spec 3.6). */
+export async function stillBusy(): Promise<void> {
+  const provider = await getCurrentProvider();
+  if (!provider) redirect("/prestador");
+  await setBusy(createServerClient(), provider.id, true);
+  revalidatePath("/painel");
+}
+
 export type LocationState = { error: string } | null;
 
 export async function saveLocation(_previous: LocationState, form: FormData): Promise<LocationState> {

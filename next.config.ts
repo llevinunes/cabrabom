@@ -7,7 +7,11 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: ["10.*.*.*", "192.168.*.*", "172.*.*.*"],
   // Search URLs carry the client's name and details; never send them to other sites (wa.me included).
   async headers() {
-    return [{ source: "/:path*", headers: [{ key: "Referrer-Policy", value: "same-origin" }] }];
+    return [
+      { source: "/:path*", headers: [{ key: "Referrer-Policy", value: "same-origin" }] },
+      // The service worker must never be served stale: updates reach users on the next visit.
+      { source: "/sw.js", headers: [{ key: "Cache-Control", value: "no-cache" }] },
+    ];
   },
   turbopack: {
     rules: {

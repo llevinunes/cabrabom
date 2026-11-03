@@ -2,7 +2,7 @@ import { afterEach, expect, test } from "vitest";
 import { createSession, endSession } from "@/lib/auth/session";
 import type { PushMessage } from "@/lib/push/messages";
 import { notifyPhone, type PushSender } from "@/lib/push/send";
-import { deleteSubscription, saveSubscription, subscriptionsForPhone } from "@/lib/push/subscriptions";
+import { deleteSubscription, saveSubscription, subscribe, subscriptionsForPhone } from "@/lib/push/subscriptions";
 import { cleanTestData, testClient } from "./helpers";
 
 const db = testClient();
@@ -74,4 +74,15 @@ test("notifyPhone swallows other errors and keeps the subscription", async () =>
   };
   await expect(notifyPhone(db, PHONE, MESSAGE, send)).resolves.toBeUndefined();
   expect(await endpointsOf(PHONE)).toEqual(["https://push.example/flaky"]);
+});
+
+test("subscribe: 401 without a session, 400 for a bad body, 204 when saved, 429 past the limit", async () => {
+  const session = await createSession(db, PHONE);
+  const body = subscription("https://push.example/route");
+  expect(await subscribe(db, null, body)).toBe(401);
+  expect(await subscribe(db, { id: session.id, phone: PHONE }, { endpoint: "http://insecure" })).toBe(400);
+  expect(await subscribe(db, { id: session.id, phone: PHONE }, body)).toBe(204);
+  expect(await endpointsOf(PHONE)).toEqual(["https://push.example/route"]);
+  for (let i = 0; i < 9; i++) await subscribe(db, { id: session.id, phone: PHONE }, body);
+  expect(await subscribe(db, { id: session.id, phone: PHONE }, body)).toBe(429);
 });

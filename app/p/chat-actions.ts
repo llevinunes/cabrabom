@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { categoryBySlug } from "@/lib/categories";
 import { env } from "@/lib/env";
+import { newRequestMessage } from "@/lib/push/messages";
 import { isInBrazil } from "@/lib/location/resolve";
 import { publicProfile, type PublicProfile } from "@/lib/providers/profile";
 import { withinLimit } from "@/lib/rate-limit";
@@ -11,6 +12,7 @@ import { findOpenRequest, openServiceRequest, recentRequestCount } from "@/lib/s
 import { whatsappLink } from "@/lib/service-requests/whatsapp";
 import { createServerClient } from "@/lib/supabase/server";
 import { getAnonymousClient } from "@/server/anonymous-client";
+import { notifyLater } from "@/server/notify";
 import { getClientIp } from "@/server/request-ip";
 
 export type ChatState = {
@@ -75,6 +77,7 @@ export async function startChat(_previous: ChatState, form: FormData): Promise<C
     anonymousClient,
     ...readPosition(form),
   });
+  notifyLater(provider.whatsapp, newRequestMessage(texts.data.name, category.name, token));
   redirect(chatUrl(provider, message, token));
 }
 

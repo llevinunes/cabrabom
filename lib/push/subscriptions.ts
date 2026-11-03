@@ -1,4 +1,6 @@
 import { z } from "zod";
+import type { Session } from "@/lib/auth/session";
+import { withinLimit } from "@/lib/rate-limit";
 import type { Db } from "@/lib/supabase/server";
 
 /** What the browser's PushSubscription.toJSON() sends to /api/push/inscrever. */
@@ -32,4 +34,17 @@ export async function subscriptionsForPhone(db: Db, phone: string): Promise<(Pus
 export async function deleteSubscription(db: Db, id: string): Promise<void> {
   const { error } = await db.from("push_subscriptions").delete().eq("id", id);
   if (error) throw error;
+}
+
+/** Subscriptions one session may save per hour (a browser re-subscribes rarely). */
+const SUBSCRIBES_PER_HOUR = 10;
+
+/** POST /api/push/inscrever: the HTTP status for this session and body. */
+export async function subscribe(db: Db, session: Session | null, body: unknown): Promise<401 | 400 | 429 | 204> {
+  if (!session) return 401;
+  const input = pushSubscriptionSchema.safeParse(body);
+  if (!input.success) return 400;
+  if (!(await withinLimit(db, `push:${session.id}`, SUBSCRIBES_PER_HOUR, 60))) return 429;
+  await saveSubscription(db, session.id, input.data);
+  return 204;
 }

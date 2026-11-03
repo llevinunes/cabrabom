@@ -68,7 +68,10 @@ test("long or direction-reversing client text stays inside the provider's screen
 
   const noSideScroll = () => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth);
   expect(await noSideScroll()).toBe(true);
-  await expect(page.getByRole("listitem").filter({ hasText: "Ana Maria" }).getByText(/expira em/)).toBeInViewport();
+  // Horizontally inside the screen (the card may be below the fold).
+  const deadline = page.getByRole("listitem").filter({ hasText: "Ana Maria" }).getByText(/expira em/);
+  await deadline.scrollIntoViewIfNeeded();
+  await expect(deadline).toBeInViewport();
 
   await page.goto(`/s/${token}`);
   expect(await noSideScroll()).toBe(true);

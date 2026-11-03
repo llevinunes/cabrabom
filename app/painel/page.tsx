@@ -3,7 +3,9 @@ import { redirect } from "next/navigation";
 import { BrandMark } from "@/components/ui/BrandMark";
 import { Button } from "@/components/ui/Button";
 import { providerDashboard } from "@/lib/providers/panel";
+import { NotificationsCard } from "@/components/NotificationsCard";
 import { ShareLink } from "@/components/ShareLink";
+import { env, pushEnabled } from "@/lib/env";
 import { confirmedText, deadlineText } from "@/lib/service-requests/deadline";
 import { recommendLink } from "@/lib/service-requests/links";
 import {
@@ -54,6 +56,14 @@ export default async function ProviderPanel() {
       </header>
 
       <StatusSwitch busy={dashboard.busy} />
+
+      <NotificationsCard
+        publicKey={pushEnabled(env()) ? env().VAPID_PUBLIC_KEY! : null}
+        loggedIn
+        returnTo="/painel"
+        title="Quer saber quando chegar um pedido?"
+        text="Ative as notificações. No iPhone, adicione o CabraBom à tela inicial antes."
+      />
 
       <div className="grid grid-cols-2 gap-3">
         <Stat value={dashboard.recommendationCount} label="recomendações" />

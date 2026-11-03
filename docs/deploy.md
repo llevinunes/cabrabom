@@ -7,15 +7,23 @@ O deploy de produção sai da branch `main`. Antes de começar, o `develop` prec
 ## 1. Banco: Supabase Cloud
 
 1. Em <https://supabase.com/dashboard>, crie um projeto. Use a região **South America (São Paulo)** e guarde a senha do banco.
-2. No terminal, na pasta do projeto:
+2. As migrações são aplicadas pelo GitHub Actions a cada merge na `main` (ADR 0043). Em <https://github.com/llevinunes/cabrabom/settings/secrets/actions>, crie três segredos de repositório:
+
+   | Segredo | Valor |
+   |---|---|
+   | `SUPABASE_ACCESS_TOKEN` | um token criado em <https://supabase.com/dashboard/account/tokens> |
+   | `SUPABASE_DB_PASSWORD` | a senha do banco do passo 1.1 |
+   | `SUPABASE_PROJECT_ID` | o ref do projeto, o código na URL do painel (`/project/<ref>`) |
+
+   No merge do `develop → main`, o workflow **Migrações** aplica todas as migrações. Elas ativam o PostGIS e o pg_cron e criam as 7 categorias. Os prestadores de exemplo (`supabase/seed.sql`) **não** vão para produção. Confira na aba **Actions** que a execução ficou verde. Para rodar de novo sem merge, use **Run workflow** nessa aba.
+
+   Se preferir aplicar à mão, no terminal do Mac, na pasta do projeto atualizada:
 
    ```bash
    npx supabase login
-   npx supabase link --project-ref <ref-do-projeto>   # o ref está na URL do painel
-   npx supabase db push                                # aplica as migrações, sem o seed
+   npx supabase link --project-ref <ref-do-projeto>
+   npx supabase db push
    ```
-
-   As migrações ativam o PostGIS e o pg_cron e criam as 7 categorias. Os prestadores de exemplo (`supabase/seed.sql`) **não** vão para produção.
 3. Em **Project Settings → API**, copie a **Project URL** (`SUPABASE_URL`) e a chave **service_role** (`SUPABASE_SERVICE_ROLE_KEY`). Essa chave dá acesso total ao banco: nunca coloque em código nem em variável `NEXT_PUBLIC_`.
 4. Confira em **Database → Cron Jobs** que existem `expire-service-requests` e `clean-login-data`.
 
@@ -82,4 +90,5 @@ O deploy de produção sai da branch `main`. Antes de começar, o `develop` prec
 - **Supabase gratuito pausa o projeto depois de 7 dias sem uso.** Para reativar, abra o painel do projeto e clique em "Restore".
 - **Cron no plano Hobby da Vercel** roda uma vez por dia, em algum momento dentro da hora agendada.
 - **Trocar o número de teste por um chip próprio** não muda o código: atualize `WHATSAPP_CABRABOM_NUMBER`, registre o número no WhatsApp da Meta e confira o webhook.
+- **Migrações novas** vão para o banco sozinhas no merge, ao mesmo tempo que o deploy da Vercel. Escreva cada migração de forma que o código anterior continue funcionando com ela (ADR 0043).
 - **Moderação:** veja a seção "Moderação" do README.

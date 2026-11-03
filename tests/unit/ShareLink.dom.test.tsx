@@ -30,3 +30,21 @@ test("copies the link and says so", async () => {
   expect(writeText).toHaveBeenCalledWith(URL);
   expect(await screen.findByRole("status")).toHaveTextContent("Link copiado");
 });
+
+test("an untrusted name in the label is isolated and can wrap", () => {
+  const name = "ابراهيم".repeat(10);
+  render(
+    <ShareLink
+      url={URL}
+      shareLabel={
+        <>
+          Enviar para <bdi>{name}</bdi>
+        </>
+      }
+      text="Confirme"
+    />,
+  );
+  const link = screen.getByRole("link", { name: `Enviar para ${name}` });
+  expect(link.querySelector("bdi")).toHaveTextContent(name);
+  expect(link.className).toContain("[overflow-wrap:anywhere]");
+});

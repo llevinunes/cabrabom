@@ -63,7 +63,11 @@ export default async function ServiceRequestForProvider({ params }: PageProps<"/
         </div>
         <ShareLink
           url={clientLink(request.clientToken)}
-          shareLabel={`Enviar para ${client}`}
+          shareLabel={
+            <>
+              Enviar para <bdi>{client}</bdi>
+            </>
+          }
           text="Confirme o serviço no CabraBom:"
         />
         <p className="text-[13px] text-secundario">

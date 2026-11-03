@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { ReportLink } from "@/components/ReportLink";
 import { BrandMark } from "@/components/ui/BrandMark";
 import { Button } from "@/components/ui/Button";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
@@ -104,6 +105,7 @@ export default async function Recommend({ params }: PageProps<"/r/[token]">) {
       ) : (
         <RecommendForm token={token} />
       )}
+      <ReportLink requestToken={token} />
     </main>
   );
 }

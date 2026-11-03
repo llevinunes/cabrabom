@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { NotificationsCard } from "@/components/NotificationsCard";
+import { ReportLink } from "@/components/ReportLink";
 import { ServiceTimeline } from "@/components/ServiceTimeline";
 import { BrandMark } from "@/components/ui/BrandMark";
 import { Button } from "@/components/ui/Button";
@@ -78,6 +79,7 @@ export default async function ServiceForClient({ params, searchParams }: PagePro
         <p className="text-[13px] text-secundario">
           Vamos abrir o WhatsApp com uma mensagem pronta para o CabraBom. É só tocar em enviar. Não precisa de senha.
         </p>
+        <ReportLink requestToken={token} />
       </main>
     );
   }
@@ -147,6 +149,7 @@ export default async function ServiceForClient({ params, searchParams }: PagePro
           Você já recomendou {provider}. Obrigado!
         </p>
       )}
+      <ReportLink requestToken={token} />
     </main>
   );
 }

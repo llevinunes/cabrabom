@@ -16,7 +16,8 @@ test("the provider accepts a request and gets the link for the client", async ({
   await page.waitForURL((url) => url.pathname === `/s/${TOKEN}`, { timeout: 10_000 });
 
   await page.getByRole("button", { name: "Aceitar serviço" }).click();
-  await expect(page.getByRole("heading", { name: "Serviço aceito!" })).toBeVisible();
+  // First run of the suite: the dev server compiles the action on this click.
+  await expect(page.getByRole("heading", { name: "Serviço aceito!" })).toBeVisible({ timeout: 15_000 });
   await expect(page.getByText(/\/c\/[A-Za-z0-9_-]{24}$/)).toBeVisible();
   await expect(page.getByRole("link", { name: "Enviar para Maria" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Copiar link" })).toBeVisible();

@@ -1,4 +1,4 @@
--- 0006 · v0.9.0 · PR #15
+-- 0006 · v0.9.0 · PR #16
 -- Accepting a request (spec 3.3, step 1): only the provider of the request, only while
 -- it is open and not expired. Accepting again returns the client token it already has.
 

@@ -1,5 +1,6 @@
 import { afterEach, beforeAll, expect, test } from "vitest";
 import { createRecommendation } from "@/lib/recommendations/create";
+import { recommendationSummary } from "@/lib/recommendations/summary";
 import {
   acceptServiceRequest,
   completeServiceRequest,
@@ -89,4 +90,28 @@ test("flags a phone that recommended 3 other providers in the last 7 days", asyn
   expect(await createRecommendation(db, clientToken, CLIENT, ANSWER)).toBe("published");
   const { data } = await db.from("recommendations").select("flagged").eq("provider_id", JOAO_ID).single();
   expect(data!.flagged).toBe(true);
+});
+
+test("recommendationSummary counts highlights and lists comments, only visible ones", async () => {
+  const phones = ["5583911110001", "5583911110002", "5583911110003"];
+  const answers = [
+    { highlights: ["Caprichoso", "Pontual"], comment: "Ótimo serviço" },
+    { highlights: ["Pontual"], comment: null },
+    { highlights: ["Educado"], comment: "Escondido" },
+  ];
+  for (let i = 0; i < 3; i++) {
+    const token = await finishedService();
+    await db.from("service_requests").update({ client_phone: phones[i] }).eq("client_token", token);
+    expect(await createRecommendation(db, token, phones[i], answers[i])).toBe("published");
+  }
+  await db.from("recommendations").update({ visible: false }).eq("client_phone", phones[2]);
+
+  expect(await recommendationSummary(db, JOAO_ID)).toEqual({
+    count: 2,
+    highlights: [
+      { name: "Pontual", count: 2 },
+      { name: "Caprichoso", count: 1 },
+    ],
+    comments: [{ firstName: "Maria", comment: "Ótimo serviço", createdAt: expect.any(Date) }],
+  });
 });

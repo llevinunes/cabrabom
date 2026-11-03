@@ -12,7 +12,7 @@ create function public.create_recommendation(
   p_client_token text,
   p_phone text,
   p_highlights text[],
-  p_comment text
+  p_comment text default null
 )
 returns text
 language plpgsql
